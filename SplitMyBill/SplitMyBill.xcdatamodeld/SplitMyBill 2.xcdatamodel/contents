@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2057" systemVersion="11G63" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Bill" representedClassName="Bill" syncable="YES">
+        <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
+        <attribute name="modified" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="rounding" attributeType="Integer 16" minValueString="0" defaultValueString="0" syncable="YES"/>
+        <attribute name="tax" attributeType="Decimal" minValueString="0" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="taxInDollars" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="tip" attributeType="Decimal" minValueString="0" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="tipInDollars" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" maxValueString="256" syncable="YES"/>
+        <attribute name="total" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 16" minValueString="0" defaultValueString="0" syncable="YES"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BillItem" inverseName="bill" inverseEntity="BillItem" syncable="YES"/>
+        <relationship name="people" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BillPerson" inverseName="bill" inverseEntity="BillPerson" syncable="YES"/>
+    </entity>
+    <entity name="BillItem" representedClassName="BillItem" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" maxValueString="100" syncable="YES"/>
+        <attribute name="preTax" attributeType="Boolean" minValueString="0" maxValueString="2" defaultValueString="0" syncable="YES"/>
+        <attribute name="price" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="split" optional="YES" attributeType="Integer 16" minValueString="1" defaultValueString="1" syncable="YES"/>
+        <relationship name="bill" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Bill" inverseName="items" inverseEntity="Bill" syncable="YES"/>
+        <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BillPerson" inverseName="items" inverseEntity="BillPerson" syncable="YES"/>
+    </entity>
+    <entity name="BillPerson" representedClassName="BillPerson" syncable="YES">
+        <attribute name="email" optional="YES" attributeType="String" maxValueString="100" syncable="YES"/>
+        <attribute name="initials" optional="YES" attributeType="String" minValueString="1" maxValueString="5" syncable="YES"/>
+        <attribute name="isMe" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" minValueString="1" syncable="YES"/>
+        <attribute name="phone" optional="YES" attributeType="String" maxValueString="20" syncable="YES"/>
+        <relationship name="bill" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Bill" inverseName="people" inverseEntity="Bill" syncable="YES"/>
+        <relationship name="contact" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Contact" inverseName="billpeople" inverseEntity="Contact" syncable="YES"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BillItem" inverseName="people" inverseEntity="BillItem" syncable="YES"/>
+    </entity>
+    <entity name="Contact" representedClassName="Contact" syncable="YES">
+        <attribute name="initials" optional="YES" attributeType="String" minValueString="1" maxValueString="5" syncable="YES"/>
+        <attribute name="name" attributeType="String" minValueString="1" syncable="YES"/>
+        <attribute name="owes" optional="YES" attributeType="Integer 32" defaultValueString="0" indexed="YES" syncable="YES"/>
+        <attribute name="sortorder" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="uniqueid" optional="YES" attributeType="Integer 32" defaultValueString="0" indexed="YES" syncable="YES"/>
+        <relationship name="billpeople" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BillPerson" inverseName="contact" inverseEntity="BillPerson" syncable="YES"/>
+        <relationship name="contactinfo" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="ContactContactInfo" inverseName="contact" inverseEntity="ContactContactInfo" syncable="YES"/>
+        <relationship name="debts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Debt" inverseName="contact" inverseEntity="Debt" syncable="YES"/>
+    </entity>
+    <entity name="ContactContactInfo" representedClassName="ContactContactInfo" syncable="YES">
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="contact" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="Contact" inverseName="contactinfo" inverseEntity="Contact" syncable="YES"/>
+    </entity>
+    <entity name="Debt" representedClassName="Debt" syncable="YES">
+        <attribute name="amount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="isSettleEntry" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="note" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="settled" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <relationship name="contact" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Contact" inverseName="debts" inverseEntity="Contact" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Bill" positionX="160" positionY="192" width="128" height="240"/>
+        <element name="BillItem" positionX="160" positionY="192" width="128" height="135"/>
+        <element name="BillPerson" positionX="160" positionY="192" width="128" height="165"/>
+        <element name="Contact" positionX="0" positionY="0" width="128" height="165"/>
+        <element name="ContactContactInfo" positionX="178" positionY="45" width="128" height="90"/>
+        <element name="Debt" positionX="187" positionY="216" width="128" height="135"/>
+    </elements>
+</model>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2057" systemVersion="11G63" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Contact" representedClassName="Contact" syncable="YES">
+        <attribute name="initials" optional="YES" attributeType="String" minValueString="1" maxValueString="5" syncable="YES"/>
+        <attribute name="name" attributeType="String" minValueString="1" syncable="YES"/>
+        <attribute name="owes" optional="YES" attributeType="Integer 32" defaultValueString="0" indexed="YES" syncable="YES"/>
+        <attribute name="sortorder" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="uniqueid" optional="YES" attributeType="Integer 32" defaultValueString="0" indexed="YES" syncable="YES"/>
+        <relationship name="contactinfo" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="ContactContactInfo" inverseName="contact" inverseEntity="ContactContactInfo" syncable="YES"/>
+        <relationship name="debts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Debt" inverseName="contact" inverseEntity="Debt" syncable="YES"/>
+    </entity>
+    <entity name="ContactContactInfo" representedClassName="ContactContactInfo" syncable="YES">
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="contact" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="Contact" inverseName="contactinfo" inverseEntity="Contact" syncable="YES"/>
+    </entity>
+    <entity name="Debt" representedClassName="Debt" syncable="YES">
+        <attribute name="amount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="isSettleEntry" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="note" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="settled" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <relationship name="contact" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Contact" inverseName="debts" inverseEntity="Contact" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Contact" positionX="0" positionY="0" width="128" height="150"/>
+        <element name="ContactContactInfo" positionX="178" positionY="45" width="128" height="90"/>
+        <element name="Debt" positionX="187" positionY="216" width="128" height="135"/>
+    </elements>
+</model>
