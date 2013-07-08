@@ -10,7 +10,6 @@
 #import "Contact.h"
 #import "SplitMyBillMainScreenViewController.h"
 #import "SplitMyBillContactDebtViewController.h"
-#import "PayPal.h"
 #import "TestFlight.h"
 
 @interface SplitMyBillAppDelegate()
@@ -30,8 +29,7 @@
     // Override point for customization after application launch.
     //"8771fd669389ef09bd77914d60a3219b_ODk3MjIyMDEyLTA1LTEyIDE3OjEyOjE4Ljk2ODk5NA"]
     [TestFlight takeOff:@"92e7748c-986f-4326-b355-50beaef5a779"];
-    //[PayPal initializeWithAppID:@"APP-80W284485P519543T" forEnvironment:ENV_SANDBOX];
-    
+
     /*
      NSManagedObjectContext *context = self.managedObjectContext;
     NSError *error;
@@ -44,14 +42,17 @@
     UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
     SplitMyBillMainScreenViewController *controller = (SplitMyBillMainScreenViewController *)navigationController.topViewController;
     controller.managedObjectContext = self.managedObjectContext;
+
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:@{
+        NSFontAttributeName: [UIFont fontWithName:@"Avenir-Medium" size:22.0],
+        NSForegroundColorAttributeName: [UIColor blackColor]
+        }];    
     
     /*
      self.venmoClient = [VenmoClient clientWithAppId:@"1161"
                     secret:@"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6"];
     */
-    
-    //MSClient *client = [MSClient clientWithApplicationURLString:@"https://splitmybillmobileservice.azure-mobile.net/"
-    //    withApplicationKey:@"DTNVZUqNdMTVfomLlTurCFPFHhgOSN14"];
     
     return YES;
 }

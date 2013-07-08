@@ -83,7 +83,6 @@
 		A3973888161179E800E28C07 /* Debt.m in Sources */ = {isa = PBXBuildFile; fileRef = A3973887161179E800E28C07 /* Debt.m */; };
 		A3AB5FB216E4578B008DD59F /* BillPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = A3AB5FB116E4578B008DD59F /* BillPerson.m */; };
 		A3AEF0CF16E481F400BCD4D2 /* Bill.m in Sources */ = {isa = PBXBuildFile; fileRef = A3AEF0CE16E481F400BCD4D2 /* Bill.m */; };
-		A3BB84B8167141E700D33330 /* libPayPalMPL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3BB84AD167141E700D33330 /* libPayPalMPL.a */; };
 		A3BB84BF167145A900D33330 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A3BB84BE167145A900D33330 /* libxml2.dylib */; };
 		A3BB84C1167145E800D33330 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3BB84C0167145E800D33330 /* Security.framework */; };
 		A3C870EE16EAE33800CA0C36 /* SplitMyBillMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = A3C870ED16EAE33800CA0C36 /* SplitMyBillMenuView.m */; };
@@ -206,17 +205,6 @@
 		A3AB5FB116E4578B008DD59F /* BillPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BillPerson.m; sourceTree = "<group>"; };
 		A3AEF0CD16E481F400BCD4D2 /* Bill.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bill.h; sourceTree = "<group>"; };
 		A3AEF0CE16E481F400BCD4D2 /* Bill.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bill.m; sourceTree = "<group>"; };
-		A3BB84AD167141E700D33330 /* libPayPalMPL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libPayPalMPL.a; sourceTree = "<group>"; };
-		A3BB84AE167141E700D33330 /* PayPal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPal.h; sourceTree = "<group>"; };
-		A3BB84AF167141E700D33330 /* PayPalAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPalAddress.h; sourceTree = "<group>"; };
-		A3BB84B0167141E700D33330 /* PayPalAdvancedPayment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPalAdvancedPayment.h; sourceTree = "<group>"; };
-		A3BB84B1167141E700D33330 /* PayPalAmounts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPalAmounts.h; sourceTree = "<group>"; };
-		A3BB84B2167141E700D33330 /* PayPalInvoiceData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPalInvoiceData.h; sourceTree = "<group>"; };
-		A3BB84B3167141E700D33330 /* PayPalInvoiceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPalInvoiceItem.h; sourceTree = "<group>"; };
-		A3BB84B4167141E700D33330 /* PayPalPayment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPalPayment.h; sourceTree = "<group>"; };
-		A3BB84B5167141E700D33330 /* PayPalPreapprovalDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPalPreapprovalDetails.h; sourceTree = "<group>"; };
-		A3BB84B6167141E700D33330 /* PayPalReceiverAmounts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPalReceiverAmounts.h; sourceTree = "<group>"; };
-		A3BB84B7167141E700D33330 /* PayPalReceiverPaymentDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayPalReceiverPaymentDetails.h; sourceTree = "<group>"; };
 		A3BB84BE167145A900D33330 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		A3BB84C0167145E800D33330 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		A3C870EC16EAE33800CA0C36 /* SplitMyBillMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitMyBillMenuView.h; sourceTree = "<group>"; };
@@ -252,7 +240,6 @@
 				A3E414A016E69F1C00087EB4 /* MobileCoreServices.framework in Frameworks */,
 				A3BB84C1167145E800D33330 /* Security.framework in Frameworks */,
 				A3BB84BF167145A900D33330 /* libxml2.dylib in Frameworks */,
-				A3BB84B8167141E700D33330 /* libPayPalMPL.a in Frameworks */,
 				A3258FA71624C7DE00DF0D61 /* QuartzCore.framework in Frameworks */,
 				A32402E6160A63FE0075797B /* CoreData.framework in Frameworks */,
 				A324448315E5C63B00AB3E6A /* libSystem.dylib in Frameworks */,
@@ -435,7 +422,6 @@
 		A38F02FD16277B5D0075279F /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				A3BB84AC167141E700D33330 /* Paypal */,
 				A3E49E4817092A5900F90DA4 /* TestFlightSDK1.2.4 */,
 				A3BB84BE167145A900D33330 /* libxml2.dylib */,
 				A324448215E5C63B00AB3E6A /* libSystem.dylib */,
@@ -491,25 +477,6 @@
 			name = images;
 			sourceTree = "<group>";
 		};
-		A3BB84AC167141E700D33330 /* Paypal */ = {
-			isa = PBXGroup;
-			children = (
-				A3BB84AD167141E700D33330 /* libPayPalMPL.a */,
-				A3BB84AE167141E700D33330 /* PayPal.h */,
-				A3BB84AF167141E700D33330 /* PayPalAddress.h */,
-				A3BB84B0167141E700D33330 /* PayPalAdvancedPayment.h */,
-				A3BB84B1167141E700D33330 /* PayPalAmounts.h */,
-				A3BB84B2167141E700D33330 /* PayPalInvoiceData.h */,
-				A3BB84B3167141E700D33330 /* PayPalInvoiceItem.h */,
-				A3BB84B4167141E700D33330 /* PayPalPayment.h */,
-				A3BB84B5167141E700D33330 /* PayPalPreapprovalDetails.h */,
-				A3BB84B6167141E700D33330 /* PayPalReceiverAmounts.h */,
-				A3BB84B7167141E700D33330 /* PayPalReceiverPaymentDetails.h */,
-			);
-			name = Paypal;
-			path = Library;
-			sourceTree = "<group>";
-		};
 		A3E49E4817092A5900F90DA4 /* TestFlightSDK1.2.4 */ = {
 			isa = PBXGroup;
 			children = (
@@ -549,7 +516,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = SplitMyBill;
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = A30EEB2F1551C6E9007077A0 /* Build configuration list for PBXProject "SplitMyBill" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -689,9 +656,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -707,9 +675,12 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -718,9 +689,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -730,7 +702,9 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
@@ -752,7 +726,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SplitMyBill/SplitMyBill-Prefix.pch";
 				INFOPLIST_FILE = "SplitMyBill/SplitMyBill-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/SplitMyBill/Paypal\"",
@@ -777,7 +751,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SplitMyBill/SplitMyBill-Prefix.pch";
 				INFOPLIST_FILE = "SplitMyBill/SplitMyBill-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/SplitMyBill/Paypal\"",
@@ -795,9 +769,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -807,7 +782,9 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
@@ -829,7 +806,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SplitMyBill/SplitMyBill-Prefix.pch";
 				INFOPLIST_FILE = "SplitMyBill/SplitMyBill-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/SplitMyBill/Paypal\"",

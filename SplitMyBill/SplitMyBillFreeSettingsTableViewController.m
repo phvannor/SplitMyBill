@@ -79,7 +79,7 @@
     if([segue.identifier isEqualToString:@"edit user"]) {
         self.user.isSelf = YES;
         [segue.destinationViewController setDelegate:self];
-        [segue.destinationViewController setUser:self.user];
+        [(SplitMyBillContactEditorViewController *)segue.destinationViewController setUser:self.user];
     } else if([segue.identifier isEqualToString:@"rounding"]) {
         [segue.destinationViewController setRoundingDataSource:self];
     } else {

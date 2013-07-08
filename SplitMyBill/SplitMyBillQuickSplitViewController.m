@@ -27,7 +27,7 @@ const NSInteger SECTION_SELF = 0;
 const NSInteger SECTION_CONTACTS = 1;
 const NSInteger SECTION_GENERICS = 2;
 
-@interface SplitMyBillQuickSplitViewController () <NSDecimalNumberBehaviors, UITableViewDataSource, UIActionSheetDelegate, BillAddDebtDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, PartySelectionDataSource, PartySelectionDelegate, UITextViewDelegate, UIImagePickerControllerDelegate>
+@interface SplitMyBillQuickSplitViewController () <NSDecimalNumberBehaviors, UIActionSheetDelegate, BillAddDebtDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, PartySelectionDataSource, PartySelectionDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *buttonActions;
 @property (weak, nonatomic) IBOutlet UIButton *buttonSubtotal;
@@ -99,7 +99,7 @@ const NSInteger SECTION_GENERICS = 2;
             [segue.destinationViewController setContact:self.editContact];
             [segue.destinationViewController setDelegate: self.partyWin];
         } else {
-            [segue.destinationViewController setUser:self.editUser];
+            [(SplitMyBillContactEditorViewController *)segue.destinationViewController setUser:self.editUser];
             [segue.destinationViewController setDelegate: self.partyWin];
         }
     }
@@ -124,9 +124,7 @@ const NSInteger SECTION_GENERICS = 2;
                               delay: 0.0
                             options: UIViewAnimationOptionCurveLinear
                          animations:^{
-                             self.keyboard.frame = CGRectMake(0, self.view.frame.size.height - 226, self.view.frame.size.width, 226);
-                             
-                             ///!!!self.table.frame = CGRectMake(98,146,221,(self.view.frame.size.height - 226 - 146));
+                             self.keyboard.frame = CGRectMake(0, self.view.frame.size.height - 226, self.view.frame.size.width, 226);                        
                          }
                          completion:nil];
         UIButton *btn;

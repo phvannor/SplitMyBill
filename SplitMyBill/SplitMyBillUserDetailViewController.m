@@ -53,7 +53,7 @@
         if(self.user.contact) {
             [segue.destinationViewController setContact:self.user.contact];
         } else {
-            [segue.destinationViewController setUser:self.editUser];
+            [(SplitMyBillContactEditorViewController *)segue.destinationViewController setUser:self.editUser];
         }
     }
 }

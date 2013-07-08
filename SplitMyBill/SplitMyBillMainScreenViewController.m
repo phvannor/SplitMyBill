@@ -180,7 +180,8 @@ NSInteger contactSort(id obj1, id obj2, void *context) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [self.navigationController setToolbarHidden:YES animated:YES];
-
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription
             entityForName:@"Contact"
@@ -222,6 +223,7 @@ NSInteger contactSort(id obj1, id obj2, void *context) {
     
     float height = self.contactScroll.frame.size.height;
     float width = self.contactScroll.frame.size.width;
+    
     self.contactScroll.backgroundColor = [UIColor colorWithWhite:0.2 alpha:1.0];
     if(self.contactList.count > 0) {
         self.contactScroll.contentSize = CGSizeMake(width * self.contactList.count, height);
@@ -338,6 +340,7 @@ NSInteger contactSort(id obj1, id obj2, void *context) {
             label.hidden = YES;
         }
     }
+    
     self.contactScroll.pagingEnabled = YES;
     
 }
@@ -347,8 +350,8 @@ NSInteger contactSort(id obj1, id obj2, void *context) {
     [super viewDidLoad];
     
     //resize our UIScrollView to the correct size
-    float height =  self.view.frame.size.height - self.contactScroll.frame.origin.y - 2;
-    self.contactScroll.frame = CGRectMake(self.contactScroll.frame.origin.x, self.contactScroll.frame.origin.y, self.contactScroll.frame.size.width, height);
+    //float height =  self.view.frame.size.height - self.contactScroll.frame.origin.y - 2;
+    //self.contactScroll.frame = CGRectMake(self.contactScroll.frame.origin.x, self.contactScroll.frame.origin.y, self.contactScroll.frame.size.width, height);
 }
 
 - (void)viewDidUnload

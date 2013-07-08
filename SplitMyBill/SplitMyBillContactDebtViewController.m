@@ -11,13 +11,11 @@
 #import "BillLogic.h"
 #import "SplitMyBillAppDelegate.h"
 #import "ContactContactInfo.h"
-#import "PayPal.h"
-#import "PayPalPayment.h"
 
 static NSString *const appID = @"1161";
 static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
 
-@interface SplitMyBillContactDebtViewController () <DebtEditorDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UIActionSheetDelegate, PayPalPaymentDelegate>
+@interface SplitMyBillContactDebtViewController () <DebtEditorDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *labelOwes;
 @property (weak, nonatomic) IBOutlet UILabel *labelOwesDesc;
 @property (strong, nonatomic) Debt *debt;
@@ -544,54 +542,6 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
     NSInteger paid = [[amount decimalNumberByMultiplyingByPowerOf10:2] integerValue];
     
     [self settleDebtsFor:paid withNote:note];
-}
-
--(void)payWithPayPal
-{
-    PayPal *ppMEP = [PayPal getPayPalInst];
-    ppMEP.shippingEnabled = NO;
-    
-	PayPalPayment *payment = [[PayPalPayment alloc] init];
-	payment.recipient = @"example-merchant-1@paypal.com";
-	payment.paymentCurrency = @"USD";
-	payment.description = @"Settle Debt";
-    payment.paymentType = TYPE_PERSONAL;
-    
-	//subtotal of all items, without tax and shipping
-	payment.subTotal = [NSDecimalNumber decimalNumberWithString:@"10"];
-	
-	//invoiceData is a PayPalInvoiceData object which contains tax, shipping, and a list of PayPalInvoiceItem objects
-	//payment.invoiceData = [[PayPalInvoiceData alloc] init];
-	//payment.invoiceData.totalShipping = [NSDecimalNumber decimalNumberWithString:@"2"];
-	//payment.invoiceData.totalTax = [NSDecimalNumber decimalNumberWithString:@"0.35"];
-	
-	//invoiceItems is a list of PayPalInvoiceItem objects
-	//NOTE: sum of totalPrice for all items must equal payment.subTotal
-	//NOTE: example only shows a single item, but you can have more than one
-	//payment.invoiceData.invoiceItems = [NSMutableArray array];
-    
-	//PayPalInvoiceItem *item = [[[PayPalInvoiceItem alloc] init] autorelease];
-	//item.totalPrice = payment.subTotal;
-	//item.name = @"Teddy";
-	//[payment.invoiceData.invoiceItems addObject:item];
-	
-	[[PayPal getPayPalInst] checkoutWithPayment:payment];
-}
-
-- (void) paymentSuccessWithKey:(NSString *)payKey andStatus:(PayPalPaymentStatus)paymentStatus {
-    
-}
-
-- (void) paymentFailedWithCorrelationID:(NSString *)correlationID {
-    
-}
-
-- (void) paymentLibraryExit {
-    
-}
-
-- (void) paymentCanceled {
-    
 }
 
 @end

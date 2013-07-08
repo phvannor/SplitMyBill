@@ -75,7 +75,7 @@
             [segue.destinationViewController setContact:self.editContact];
             [segue.destinationViewController setDelegate: self.partyView];
         } else {
-            [segue.destinationViewController setUser:self.editUser];
+            [(SplitMyBillContactEditorViewController *)segue.destinationViewController setUser:self.editUser];
             [segue.destinationViewController setDelegate: self.partyView];
         }
     } else if([segue.identifier isEqualToString:@"item editor"] || [segue.identifier isEqualToString:@"user item editor"]) {
