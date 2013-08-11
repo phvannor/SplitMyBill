@@ -23,7 +23,7 @@
 //#import "SplitMyBillUserOwesTableCellCell.h"
 //#import "BillUser.h"
 
-@interface SplitMyBillEditorViewController () <PartySelectionDataSource, PartySelectionDelegate, BillEditorDataSource, BillEditorDelegate, SplitMyBillItemEditorViewControllerDelegate, TaxViewDataSource, TipViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate>
+@interface SplitMyBillEditorViewController () <PartySelectionDataSource, PartySelectionDelegate, BillEditorDataSource, BillEditorDelegate, SplitMyBillItemEditorViewControllerDelegate, TipViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate>
 
 //menu related properties
 @property (weak, nonatomic) IBOutlet UIView *menuView;
@@ -92,10 +92,10 @@
     } else if([segue.identifier isEqualToString:@"edit tip"]) {
         [(TipViewController *)segue.destinationViewController setDataSource:self];
     } else if([segue.identifier isEqualToString:@"view user details"]) {
-        [segue.destinationViewController setLogic:self.logic];
-        [segue.destinationViewController setUser:self.editUser];
+        //[segue.destinationViewController setLogic:self.logic];
+        //[(SplitMyBillContactEditorViewController *)segue.destinationViewController setUser:self.editUser];
     } else if([segue.identifier isEqualToString:@"grand total"]) {
-        [segue.destinationViewController setLogic:self.logic];
+        //[segue.destinationViewController setLogic:self.logic];
     } else if([segue.identifier isEqualToString:@"add debts"]) {
         [segue.destinationViewController setBilllogic:self.logic];
         [segue.destinationViewController setDelegate:self];
@@ -113,7 +113,7 @@
                      animations:^{
                          self.menuView.frame = CGRectMake(0, 0, self.menuView.frame.size.width, self.menuView.frame.size.height);
                          
-                         self.scrollView.frame = CGRectMake(270,2,self.scrollView.frame.size.width, self.scrollView.frame.size.height);
+                         self.scrollView.frame = CGRectMake(270,0,self.scrollView.frame.size.width, self.scrollView.frame.size.height);
                      }
                      completion:^(BOOL finished) {
                              self.buttonHideRight.hidden = NO;
@@ -127,7 +127,7 @@
                          animations:^{
                              self.menuView.frame = CGRectMake(-1 *self.menuView.frame.size.width, 0, self.menuView.frame.size.width, self.menuView.frame.size.height);
                              
-                             self.scrollView.frame = CGRectMake(0,2,self.scrollView.frame.size.width, self.scrollView.frame.size.height);
+                             self.scrollView.frame = CGRectMake(0,0,self.scrollView.frame.size.width, self.scrollView.frame.size.height);
                             
                          }
                          completion:nil];
@@ -146,14 +146,14 @@
     cameraUI.allowsEditing = NO;
     cameraUI.delegate = self;
     
-    [self presentModalViewController:cameraUI animated:YES];
+    [self presentViewController:cameraUI animated:YES completion:nil];
     
     return;
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    [picker dismissModalViewControllerAnimated:YES];
+    [picker dismissViewControllerAnimated:YES completion:nil];
     
     //store the file
     UIImage *originalImage; //, *editedImage, *imageToSave;
@@ -174,7 +174,7 @@
 
 - (void) imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [picker dismissModalViewControllerAnimated:YES];
+    [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)exitBill:(id)sender {
@@ -346,12 +346,8 @@
 
 
 #pragma mark - PartySelectionDataSource
-@synthesize logic = _logic;
 - (BillLogic *)logic {
     return self.billlogic;
-}
-- (void) setLogic:(BillLogic *)logic {
-    return;
 }
 
 /*
@@ -404,7 +400,7 @@
     //need to update table view in billView...?
     [(SplitMyBillBillEditor *)self.billView reloadData];
     
-    [self.scrollView scrollRectToVisible:CGRectMake(self.scrollView.frame.size.width, 0, self.scrollView.frame.size.width, self.scrollView.frame.size.height) animated:YES];
+    [self.scrollView scrollRectToVisible:CGRectMake(320, 0, 320, self.scrollView.frame.size.height) animated:YES];
 }
 
 - (void) addDebt {
@@ -482,9 +478,7 @@
                         options: UIViewAnimationOptionCurveEaseIn
                      animations:^{
                          self.menuView.frame = CGRectMake(-1 * self.menuView.frame.size.width, 0, self.menuView.frame.size.width, self.menuView.frame.size.height);
-                         
                          self.scrollView.frame = CGRectMake(0,2,self.scrollView.frame.size.width, self.scrollView.frame.size.height);
-                                                  
                          self.scrollView.alpha = 1.0f;
                          self.view.backgroundColor = [UIColor whiteColor];
                      }
@@ -559,11 +553,8 @@
 - (void) setTaxAmount:(NSDecimalNumber *)taxAmount {
     self.logic.taxInDollars = taxAmount;
 }
-@synthesize inDollars = _inDollars;
 - (bool) inDollars {
     return (self.logic.isTaxInDollars);
-}
-- (void) setInDollars:(bool)inDollars {
 }
 
 #pragma mark TipViewDataSource

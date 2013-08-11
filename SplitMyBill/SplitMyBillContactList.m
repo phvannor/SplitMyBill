@@ -22,7 +22,6 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 - (IBAction)addContact:(id)sender;
-- (IBAction)buttonNavigationBack;
 @end
 
 @implementation SplitMyBillContactList
@@ -90,8 +89,10 @@
 	}
     self.tableView.layer.borderColor = [UIColor colorWithWhite:0.6f alpha:1.0f].CGColor;
     self.tableView.layer.borderWidth = 1.0f;
-    
-    self.title = @"Contacts";
+}
+
+- (void) viewWillAppear:(BOOL)animated {
+    [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
 - (void)viewDidUnload
@@ -147,22 +148,33 @@
     }
     
     UIImageView *image = (UIImageView *)[cell viewWithTag:4];
-    image.hidden = NO;
-    image.image = [UIImage imageNamed:@"person-small.png"];
+    image.hidden = YES;
     
     //get image from contact?
     ABRecordID contactID = (ABRecordID)[contact.uniqueid integerValue];
     if(contactID != kABRecordInvalidID) {
-        ABAddressBookRef abook = ABAddressBookCreate();
+        CFErrorRef *error = nil;
+        ABAddressBookRef abook = ABAddressBookCreateWithOptions(nil, error);
+        
         ABRecordRef record = ABAddressBookGetPersonWithRecordID(abook, contactID);
         if(record) {
             if(ABPersonHasImageData(record)) {
                 NSData *imageData = (NSData *)CFBridgingRelease(ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail));
+                
                 UIImage *img = [[UIImage alloc] initWithData:imageData];
                 [image setImage:img];
+                [image.layer setCornerRadius:17.0f];
+                image.hidden = NO;
             }
         }
         CFRelease(abook);
+    }
+
+    initials.hidden = !image.hidden;
+
+    // show a initial window instead
+    if(image.hidden) {
+        [initials.layer setCornerRadius:17.0f];
     }
 }
 
@@ -181,27 +193,6 @@
 {
     return NO;
 }
-
-// Override to support editing the table view.
-/*
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-    }
-}
-*/
-
-// Override to support rearranging the table view.
-/*
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-}
-
-- (void) tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
 
 #pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
@@ -365,7 +356,6 @@
 }
 
 #pragma mark - ContactEditorDelegate
-//- (void) formClose:(bool)SaveChanges {
 - (void) ContactEditor:(id)Editor Close:(bool)SaveChanges
 {
     if(SaveChanges) {
@@ -454,7 +444,6 @@
     }
 }
 
-
 - (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id )sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
     
     switch(type) {
@@ -468,7 +457,6 @@
             break;
     }
 }
-
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     // The fetch controller has sent all current change notifications, so tell the table view to process all updates.

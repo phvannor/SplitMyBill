@@ -13,14 +13,11 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface SplitMyBillUserDetailViewController () <UITableViewDataSource, UITableViewDelegate, ContactEditorDelegate>
-@property (weak, nonatomic) IBOutlet UILabel *headerLabel;
 @property (nonatomic, strong) BillUser *editUser;
-
 - (IBAction)editUser:(id)sender;
 @end
 
 @implementation SplitMyBillUserDetailViewController
-@synthesize headerLabel = _headerLabel;
 @synthesize user = _user;
 @synthesize logic = _logic;
 @synthesize userTotal = _userTotal;
@@ -37,11 +34,8 @@
         self.editUser.email = self.user.email;
         self.editUser.phone = self.user.phone;
     }
+    
     [self performSegueWithIdentifier:@"edit user" sender:self];
-}
-
-- (IBAction)buttonNavigationBack:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -77,7 +71,7 @@
     [super viewDidLoad];
     
     //populate our fields text
-    self.headerLabel.text = self.user.name;
+    self.title = self.user.name;
     self.userSubtotal.text = [BillLogic formatMoney:[self.logic itemtotalForUser:self.user]];
     self.userTax.text = [BillLogic formatMoney:[self.logic taxForUser:self.user]];
     self.userTip.text = [BillLogic formatMoney:[self.logic tipForUser:self.user]];
@@ -87,7 +81,6 @@
 
 - (void)viewDidUnload
 {
-    [self setHeaderLabel:nil];
     [self setUserTotal:nil];
     [self setUserSubtotal:nil];
     [self setUserTip:nil];
@@ -201,7 +194,7 @@
     
     NSError *error;
     if (![cont.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        NSLog(@"Couldn't save: %@", [error localizedDescription]);
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Adding Person" message:@"An error occurred while attempting to create a new person" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
         [alert show];
     }
@@ -210,6 +203,7 @@
     [self.navigationController popViewControllerAnimated:YES];
     
     //tell our delegate we have been deleted?
+    
     self.user.contact = nil;
 }
 

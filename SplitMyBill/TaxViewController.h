@@ -13,7 +13,7 @@
 @protocol TaxViewDataSource
 @property (nonatomic, weak) NSDecimalNumber *taxPercent;
 @property (nonatomic, weak) NSDecimalNumber *taxAmount;
-@property (nonatomic) bool inDollars;
+- (bool) inDollars;
 @end
 
 @interface TaxViewController : UIViewController

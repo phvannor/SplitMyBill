@@ -27,16 +27,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
-    //"8771fd669389ef09bd77914d60a3219b_ODk3MjIyMDEyLTA1LTEyIDE3OjEyOjE4Ljk2ODk5NA"]
     [TestFlight takeOff:@"92e7748c-986f-4326-b355-50beaef5a779"];
-
-    /*
-     NSManagedObjectContext *context = self.managedObjectContext;
-    NSError *error;
-    if (![context save:&error]) {
-        NSLog(@"Error creating database: %@", [error localizedDescription]);
-    }
-    */
     
     //give our default view the object context
     UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
@@ -47,12 +38,7 @@
     [[UINavigationBar appearance] setTitleTextAttributes:@{
         NSFontAttributeName: [UIFont fontWithName:@"Avenir-Medium" size:22.0],
         NSForegroundColorAttributeName: [UIColor blackColor]
-        }];    
-    
-    /*
-     self.venmoClient = [VenmoClient clientWithAppId:@"1161"
-                    secret:@"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6"];
-    */
+        }];
     
     return YES;
 }

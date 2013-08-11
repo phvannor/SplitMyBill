@@ -13,6 +13,7 @@
 #import "BillLogic.h"
 #import "SplitMyBillEditorViewController.h"
 #import "SplitMyBillQuickSplitViewController.h"
+#import "SMBBillController.h"
 
 @interface SplitMyBillAllBillsViewController () <NSFetchedResultsControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
@@ -37,12 +38,14 @@
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if([segue.identifier isEqualToString:@"to bill"]) {
-        self.logic = [[BillLogic alloc] initWithBill:self.editBill andContext:self.managedObjectContext];
+         self.logic = [[BillLogic alloc] initWithBill:self.editBill andContext:self.managedObjectContext];        
         
-        SplitMyBillEditorViewController *controller = segue.destinationViewController;
+        //SplitMyBillEditorViewController
+        SMBBillController *controller = segue.destinationViewController;
         controller.bill = self.editBill;
         controller.billlogic = self.logic;
         controller.managedObjectContext = self.managedObjectContext;
+        
     } else if([segue.identifier isEqualToString:@"simple bill"]) {
         self.logic = [[BillLogic alloc] initWithBill:self.editBill andContext:self.managedObjectContext];
         

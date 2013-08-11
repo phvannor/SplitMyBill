@@ -180,7 +180,7 @@ NSInteger contactSort(id obj1, id obj2, void *context) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [self.navigationController setToolbarHidden:YES animated:YES];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    //[self.navigationController setNavigationBarHidden:NO animated:YES];
     
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription
@@ -244,7 +244,10 @@ NSInteger contactSort(id obj1, id obj2, void *context) {
             bool imageSet = NO;
             ABRecordID contactID = (ABRecordID)[contact.uniqueid integerValue];
             if(contactID != kABRecordInvalidID) {
-                ABRecordRef record = ABAddressBookGetPersonWithRecordID(ABAddressBookCreate(), contactID);
+                CFErrorRef err;
+                ABAddressBookRef ab = ABAddressBookCreateWithOptions(NULL, &err);
+                
+                ABRecordRef record = ABAddressBookGetPersonWithRecordID(ab, contactID);
                 if(record) {
                     if(ABPersonHasImageData(record)) {
                         NSData *imageData = (NSData *)CFBridgingRelease(ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail));
@@ -277,14 +280,14 @@ NSInteger contactSort(id obj1, id obj2, void *context) {
                 label.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
                 label.font = [UIFont fontWithName:@"Avenir-Medium" size:24];                
                 label.textColor = [UIColor whiteColor];
-                label.textAlignment = UITextAlignmentCenter;
+                label.textAlignment = NSTextAlignmentCenter;
                 label2 = [[UILabel alloc] initWithFrame:CGRectMake(offset + height, height - 47, width - height, 12)];
                 label2.tag = i*10 + 4;
                 [self.contactScroll addSubview:label2];
                 label2.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
                 label2.font = [UIFont fontWithName:@"Avenir-Medium" size:14];
                 label2.textColor = [UIColor whiteColor];
-                label2.textAlignment = UITextAlignmentCenter;
+                label2.textAlignment = NSTextAlignmentCenter;                
             }
             NSInteger money = [contact.owes integerValue];
             if(money < 0) {

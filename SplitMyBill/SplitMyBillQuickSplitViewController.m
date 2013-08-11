@@ -773,14 +773,14 @@ const NSInteger SECTION_GENERICS = 2;
     cameraUI.allowsEditing = NO;
     cameraUI.delegate = self;
     
-    [self presentModalViewController:cameraUI animated:YES];
+    [self presentViewController:cameraUI animated:YES completion:nil];
     
     return;
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    [picker dismissModalViewControllerAnimated:YES];
+    [picker dismissViewControllerAnimated:YES completion:nil];
     
     //store the file
     UIImage *originalImage; //, *editedImage, *imageToSave;
@@ -801,7 +801,7 @@ const NSInteger SECTION_GENERICS = 2;
 
 - (void) imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [picker dismissModalViewControllerAnimated:YES];
+    [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
 //text view...

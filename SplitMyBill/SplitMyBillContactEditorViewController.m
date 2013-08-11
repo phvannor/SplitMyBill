@@ -14,7 +14,6 @@
 @property (nonatomic) ABAddressBookRef abook;
 @property (nonatomic) ABRecordRef abContact;
 @property (nonatomic, copy) NSString *orginalValue;
-@property (weak, nonatomic) IBOutlet UIView *buttonDeleteView;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 - (IBAction)buttonCancel:(id)sender;
@@ -60,57 +59,21 @@
     //no toolbar on this screen
     [self.navigationController setToolbarHidden:YES];
     
-    // check if the contactrefID is valid and still exists on the phone
+    // check if the contactID is valid and still exists on the phone
     if(self.contact) {
         NSNumber *myNum = self.contact.uniqueid;
         ABRecordID myID = (ABRecordID)[myNum integerValue];
         if(myID != kABRecordInvalidID) {
-            self.abook =  ABAddressBookCreate();
-            ABRecordRef ref =ABAddressBookGetPersonWithRecordID(self.abook, myID);
+            CFErrorRef err;
+            self.abook = ABAddressBookCreateWithOptions(NULL, &err);
+            
+            ABRecordRef ref = ABAddressBookGetPersonWithRecordID(self.abook, myID);
             self.abContact = ref;
         }
     }
-    
-    //UIImage *backImage = [[UIImage imageNamed:@"button-red.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(7, 7, 9, 9)];
-    
-    if(self.user.isSelf) {
-        self.buttonDeleteView.hidden = self.user.isSelf;
-        return;
-    }
-    
-    UIButton *button = (UIButton *)[self.view viewWithTag:30];
-    
-    // Add Border
-    CALayer *layer = button.layer;
-
-    layer.cornerRadius = 8.0f;
-    layer.masksToBounds = YES;
-    layer.borderWidth = 1.0f;
-    layer.borderColor = [UIColor colorWithWhite:0.2f alpha:0.4f].CGColor;
-    layer.backgroundColor = [UIColor redColor].CGColor;
-    
-    // Add Shine
-    CAGradientLayer *shineLayer = [CAGradientLayer layer];
-    shineLayer.frame = layer.bounds;
-    shineLayer.colors = [NSArray arrayWithObjects:
-                         (id)[UIColor colorWithWhite:1.0f alpha:0.4f].CGColor,
-                         (id)[UIColor colorWithWhite:1.0f alpha:0.2f].CGColor,
-                         (id)[UIColor colorWithWhite:0.75f alpha:0.2f].CGColor,
-                         (id)[UIColor colorWithWhite:0.4f alpha:0.2f].CGColor,
-                         (id)[UIColor colorWithWhite:1.0f alpha:0.4f].CGColor,
-                         nil];
-    shineLayer.locations = [NSArray arrayWithObjects:
-                            [NSNumber numberWithFloat:0.0f],
-                            [NSNumber numberWithFloat:0.5f],
-                            [NSNumber numberWithFloat:0.5f],
-                            [NSNumber numberWithFloat:0.8f],
-                            [NSNumber numberWithFloat:1.0f],
-                            nil];
-    [layer addSublayer:shineLayer];
 }
 
 - (void) viewDidUnload {
-    [self setButtonDeleteView:nil];
     [self setTableView:nil];
     
     if(!self.abook)
@@ -129,7 +92,10 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 3;
+    if(self.user.isSelf)
+        return 3;
+    
+    return 3; //4 for delete
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -147,9 +113,11 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if(section == 0)
+    if(section == 0) // user
         return 2;
-
+    if(section == 2) // delete
+        return 1;
+    
     if(self.abContact == NULL)
         return 1;
 
@@ -158,13 +126,13 @@
         ABMultiValueRef phoneNumbers = ABRecordCopyValue(self.abContact, kABPersonPhoneProperty);
         count = ABMultiValueGetCount(phoneNumbers);
         CFRelease(phoneNumbers);
-    } else if(section == 2){
+    } else if(section == 2) {
         ABMultiValueRef emails = ABRecordCopyValue(self.abContact, kABPersonEmailProperty);
         count = ABMultiValueGetCount(emails);
         CFRelease(emails);
     }
     
-    return count + 1;
+    return count;
 }
 
 - (bool) checkListed:(bool)usePhone {
@@ -232,7 +200,7 @@
             } else {
                 label = @"";
             }
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"text cell"];
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"display cell"];
             cell.accessoryType = UITableViewCellAccessoryNone;
             cell.textLabel.text = label;
             cell.detailTextLabel.text = details;
@@ -246,7 +214,7 @@
     }
     
     //either no other numbers or we are the last row
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"title edit cell"];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"edit cell"];
         
     //populate the text of the cell with the value in contact
     UILabel *myLabel = (UILabel *) [cell viewWithTag:2];
@@ -294,7 +262,6 @@
     UITableViewCell *cell;
     if(indexPath.section == 0) {
         cell = [tableView dequeueReusableCellWithIdentifier:@"edit cell"];
-        
         [cell setSelectionStyle: UITableViewCellSelectionStyleNone];
         
         UITextField *textField = (UITextField *) [cell viewWithTag:1];
@@ -329,48 +296,22 @@
     return cell;
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-
 #pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //we want to move the checkmark, and turn off the highlight?
-    if(indexPath.section == 0)
+    if(indexPath.section == 0 || indexPath.section == 3)
         return;
     
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
 
     NSString *value;
+    
     //update the phone/email to the correct value
     if([cell.reuseIdentifier isEqualToString:@"text cell"]) {
         value = cell.detailTextLabel.text;
     } else {
-        //else grab from the 'custom' field
-        UITextField *text = (UITextField *)[cell viewWithTag:1];
-        value = text.text;
+        value = cell.detailTextLabel.text;
     }
 
     if(indexPath.section == 1)

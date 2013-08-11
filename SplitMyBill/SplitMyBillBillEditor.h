@@ -11,7 +11,7 @@
 #import "BillLogicItem.h"
 
 @protocol BillEditorDataSource
-@property (nonatomic, weak) BillLogic *logic;
+- (BillLogic *) logic;
 - (bool) totalIsSimple;
 - (bool) discountsPreTax;
 @end

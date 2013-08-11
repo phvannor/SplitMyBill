@@ -18,8 +18,8 @@
 */
 
 @protocol PartySelectionDataSource
-@property (nonatomic, weak) BillLogic *logic;
-@property (nonatomic, weak) NSManagedObjectContext *managedObjectContext;
+- (BillLogic *) logic;
+- (NSManagedObjectContext *) managedObjectContext;
 @end
 
 @protocol PartySelectionDelegate <NSObject>

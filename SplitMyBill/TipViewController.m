@@ -11,7 +11,6 @@
 
 @interface TipViewController ()
 @property (nonatomic) bool userIsEnteringNumber;
-@property (weak, nonatomic) IBOutlet UITextField *display2;
 @property (weak, nonatomic) IBOutlet UIButton *buttonDecimal;
 @property (weak, nonatomic) IBOutlet UIButton *buttonZero;
 @property (weak, nonatomic) IBOutlet UIButton *button15;
@@ -19,16 +18,14 @@
 @property (weak, nonatomic) IBOutlet UIButton *button20;
 @property (nonatomic, strong) NSNumberFormatter *formatter;
 @property (nonatomic) NSInteger rawAmountValueInCents;
-@property (weak, nonatomic) IBOutlet UILabel *labelWarning;
-@property (weak, nonatomic) IBOutlet UIButton *buttonUseDollars;
 
-- (IBAction)buttonSave:(id)sender;
-- (IBAction)buttonNavigationBack:(id)sender;
+@property (weak, nonatomic) IBOutlet UILabel *labelWarning;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *switchDollarPercent;
+@property (nonatomic) bool inDollars;
 @end
 
 @implementation TipViewController
 @synthesize userIsEnteringNumber = _userIsEnteringNumber;
-@synthesize display2 = _display2;
 @synthesize buttonDecimal = _buttonDecimal;
 @synthesize buttonZero = _buttonZero;
 @synthesize button15 = _button15;
@@ -40,67 +37,66 @@
 @synthesize formatter = _formatter;
 @synthesize rawAmountValueInCents = _rawAmountValueInCents;
 @synthesize labelWarning = _labelWarning;
+@synthesize inDollars = _inDollars;
 
-- (IBAction)buttonNavigationBack:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (IBAction)buttonSave:(id)sender {
-    if(self.buttonUseDollars.selected) {
+- (void) viewWillDisappear:(BOOL)animated
+{
+    if(self.inDollars) {
         NSDecimalNumber *temp = [NSDecimalNumber decimalNumberWithMantissa:self.rawAmountValueInCents exponent:-2 isNegative:NO];
         self.dataSource.tipAmount = temp;
     } else {
         NSDecimalNumber *temp = [NSDecimalNumber decimalNumberWithString:self.display.text];
         self.dataSource.tipPercent = [temp decimalNumberByMultiplyingByPowerOf10:-2];
     }
-    
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
+/*
+ * Configures form for editing the tip in either dollars or as a percentage
+ */
 - (void) setupForm:(bool)isPercent {
     self.userIsEnteringNumber = NO;
     
+    self.inDollars = !isPercent;
     if(isPercent) {
+        [self.switchDollarPercent setSelectedSegmentIndex:1];
         [self.formatter setNumberStyle: NSNumberFormatterDecimalStyle];
-        [UIView animateWithDuration:0.3 animations: ^{
-            self.buttonZero.frame = CGRectMake(self.button18.frame.origin.x, 340, 102, 55);
-            self.buttonDecimal.alpha = 1;
-            [self.button15 setTitle:@"15%" forState:UIControlStateNormal];
-            [self.button18 setTitle:@"18%" forState:UIControlStateNormal];
-            [self.button20 setTitle:@"20%" forState:UIControlStateNormal];
-        }];
-
-        self.display.text = [self.formatter stringFromNumber: [self.dataSource.tipPercent decimalNumberByMultiplyingByPowerOf10:2]];
+        self.buttonDecimal.hidden = NO;
+        NSDecimalNumber *value = self.dataSource.tipPercent;
+        if(!value) {
+            value = [NSDecimalNumber zero];
+        }        
+        self.display.text = [self.formatter stringFromNumber: [value decimalNumberByMultiplyingByPowerOf10:2]];
         self.display.text = [self.display.text stringByAppendingString:@"%"];
         
+        [self.button15 setTitle:@"15%" forState:UIControlStateNormal];
+        [self.button18 setTitle:@"18%" forState:UIControlStateNormal];
+        [self.button20 setTitle:@"20%" forState:UIControlStateNormal];
+        
     } else {
+        [self.switchDollarPercent setSelectedSegmentIndex:0];
         [self.formatter setNumberStyle: NSNumberFormatterCurrencyStyle];
-        [UIView animateWithDuration:0.3 animations: ^{        
-            self.buttonDecimal.alpha = 0;
-            self.buttonZero.frame = CGRectMake(self.button15.frame.origin.x, 340, 205, 55);
-            //calculate 15, 18, and 20 percent of the total
-            NSDecimalNumber *itemTotal = self.dataSource.totalToTipOn;
-            [self.button15 setTitle:[self.formatter stringFromNumber:[itemTotal decimalNumberByMultiplyingBy:[NSDecimalNumber decimalNumberWithMantissa:15 exponent:-2 isNegative:NO]]] forState:UIControlStateNormal];
-            [self.button18 setTitle:[self.formatter stringFromNumber:[itemTotal decimalNumberByMultiplyingBy:[NSDecimalNumber decimalNumberWithMantissa:18 exponent:-2 isNegative:NO]]] forState:UIControlStateNormal];
-            [self.button20 setTitle:[self.formatter stringFromNumber:[itemTotal decimalNumberByMultiplyingBy:[NSDecimalNumber decimalNumberWithMantissa:20 exponent:-2 isNegative:NO]]] forState:UIControlStateNormal];
-        }];
+        self.buttonDecimal.hidden = YES;
+        
+        //calculate 15, 18, and 20 percent of the total
+        NSDecimalNumber *itemTotal = self.dataSource.totalToTipOn;
+        [self.button15 setTitle:[self.formatter stringFromNumber:[itemTotal decimalNumberByMultiplyingBy:[NSDecimalNumber decimalNumberWithMantissa:15 exponent:-2 isNegative:NO]]] forState:UIControlStateNormal];
+        [self.button18 setTitle:[self.formatter stringFromNumber:[itemTotal decimalNumberByMultiplyingBy:[NSDecimalNumber decimalNumberWithMantissa:18 exponent:-2 isNegative:NO]]] forState:UIControlStateNormal];
+        [self.button20 setTitle:[self.formatter stringFromNumber:[itemTotal decimalNumberByMultiplyingBy:[NSDecimalNumber decimalNumberWithMantissa:20 exponent:-2 isNegative:NO]]] forState:UIControlStateNormal];
         
         NSDecimalNumber *tip = self.dataSource.tipAmount;
-        self.display.text = [self.formatter stringFromNumber:tip];        
+        self.display.text = [self.formatter stringFromNumber:tip];
+        
         //convert back to cents
         self.rawAmountValueInCents = [[tip decimalNumberByMultiplyingByPowerOf10:2] intValue];     
     }
 }
 
-- (IBAction)useDollars:(UIButton *)sender {
-    bool temp = sender.selected;
-    [self setupForm:temp];
-    [sender setSelected:!temp];
+- (IBAction)switchMode:(UISegmentedControl *)sender {
+    [self setupForm:sender.selectedSegmentIndex == 1];
 }
 
-
 - (IBAction)digitPress:(UIButton *)sender {
-    if(self.buttonUseDollars.selected) {
+    if(self.inDollars) {
         NSInteger newCents = self.rawAmountValueInCents;
         if(self.userIsEnteringNumber) {
             newCents *= 10;
@@ -109,9 +105,8 @@
             newCents = [sender.currentTitle intValue];
         }
         
+        // Don't accept if it puts us over max value
         if(newCents > 1000000) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Invalid Tip" message:@"Tip cannot exceed $10,000" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-            [alert show];
             return;
         }
 
@@ -168,7 +163,7 @@
     //remove last digit or set back to 0    
     self.userIsEnteringNumber = YES;
     
-    if(self.buttonUseDollars.selected) {
+    if(self.inDollars) {
         self.rawAmountValueInCents /= 10;
         NSDecimalNumber *tip = [NSDecimalNumber decimalNumberWithMantissa:self.rawAmountValueInCents exponent:-2 isNegative:NO];
         self.display.text = [self.formatter stringFromNumber:tip];
@@ -185,7 +180,7 @@
 }
 
 - (void) setTipAndClose:(NSString *)tip {
-    if(self.buttonUseDollars.selected) {
+    if(self.inDollars) {
         tip = [tip stringByReplacingOccurrencesOfString:@"$" withString:@""];
         tip = [tip stringByReplacingOccurrencesOfString:@"," withString:@""];
         tip = [tip stringByReplacingOccurrencesOfString:@"." withString:@""];
@@ -194,25 +189,25 @@
         self.display.text = tip;
     }
     
-    [self buttonSave:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (IBAction)quickPick15:(UIButton *)sender {
-    if(self.buttonUseDollars.selected)
+    if(self.inDollars)
         [self setTipAndClose:sender.currentTitle];
     else
         [self setTipAndClose:@"15"];
 }
 
 - (IBAction)quickPick18:(UIButton *)sender {
-    if(self.buttonUseDollars.selected)
+    if(self.inDollars)
         [self setTipAndClose:sender.currentTitle];
     else
         [self setTipAndClose:@"18"];
 }
 
 - (IBAction)quickPick20:(UIButton *)sender {
-    if(self.buttonUseDollars.selected)
+    if(self.inDollars)
         [self setTipAndClose:sender.currentTitle];
     else
         [self setTipAndClose:@"20"];
@@ -237,12 +232,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     self.formatter = [[NSNumberFormatter alloc] init];
-    self.buttonUseDollars.selected = self.dataSource.tipInDollars;
-    
     [self setupForm:!self.dataSource.tipInDollars];
-    
-    self.buttonUseDollars.layer.borderColor = [UIColor colorWithWhite:0.8f alpha:1.0f].CGColor;
-    self.buttonUseDollars.layer.borderWidth = 1.0f;
 }
 
 - (void)viewDidUnload
@@ -256,9 +246,7 @@
     [self setButton18:nil];
     [self setButton20:nil];
     [self setLabelWarning:nil];
-    [self setButtonUseDollars:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

@@ -11,14 +11,12 @@
 
 @interface TaxViewController ()
 @property (nonatomic) bool userIsEnteringNumber;
-@property (weak, nonatomic) IBOutlet UIButton *buttonUseDollars;
+@property (nonatomic) bool inDollars;
 @property (weak, nonatomic) IBOutlet UIButton *buttonDecimal;
 @property (weak, nonatomic) IBOutlet UIButton *buttonZero;
 @property (weak, nonatomic) IBOutlet UIButton *buttonDelete;
 @property (nonatomic, strong) NSNumberFormatter *formatter;
-
-- (IBAction)buttonNavigationBack:(id)sender;
-- (IBAction)buttonSave:(id)sender;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *switchDollarPercent;
 @end
 
 @implementation TaxViewController
@@ -30,11 +28,9 @@
 @synthesize dataSource = _dataSource;
 @synthesize formatter = _formatter;
 
-- (IBAction)buttonNavigationBack:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
-}
-- (IBAction)buttonSave:(id)sender {
-    if(self.buttonUseDollars.selected) {
+- (void) viewWillDisappear:(BOOL)animated
+{
+    if(self.inDollars) {
         NSString *temp = [self.display.text stringByReplacingOccurrencesOfString:@"$" withString:@""];
         temp = [temp stringByReplacingOccurrencesOfString:@"," withString:@""];
         temp = [temp stringByReplacingOccurrencesOfString:@"." withString:@""];
@@ -43,51 +39,48 @@
         NSDecimalNumber *temp = [NSDecimalNumber decimalNumberWithString:[self.display.text stringByReplacingOccurrencesOfString:@"%" withString:@""]];
         self.dataSource.taxPercent = [temp decimalNumberByMultiplyingByPowerOf10:-2];
     }
-    
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
+/*
+ * Transitions the form between display editing for % tips vs
+ * displaying the form for a dollar amount
+ */
 - (void) setupForm:(bool)isPercent {
     //if percent, hide the decimal key
     if(isPercent) {
+        [self.switchDollarPercent setSelectedSegmentIndex:1];
+        
+        // In percent mode we display a 'decimal' point button
         [self.formatter setNumberStyle: NSNumberFormatterDecimalStyle];
-        [UIView animateWithDuration:0.3 animations: ^{
-            self.buttonZero.frame = CGRectMake(109, 279, 102, 55);
-            self.buttonDecimal.alpha = 1;
-        }];
+        self.buttonDecimal.hidden = NO;
+        NSDecimalNumber *value = self.dataSource.taxPercent;
+        if(!value) {
+            value = [NSDecimalNumber zero];
+        }
+        self.display.text = [self.formatter stringFromNumber: [value decimalNumberByMultiplyingByPowerOf10:2]];
+        self.display.text  = [self.display.text stringByAppendingString:@"%"];
         
-        //self.display.text = [self.formatter stringFromNumber: self.dataSource.taxPercent];        
-        self.display.text = [self.formatter stringFromNumber: [self.dataSource.taxPercent decimalNumberByMultiplyingByPowerOf10:2]];        
-        self.display.text = [self.display.text stringByAppendingString:@"%"];
     } else {
-        [self.formatter setNumberStyle: NSNumberFormatterCurrencyStyle];
-        [UIView animateWithDuration:0.3 animations: ^{
-            self.buttonDecimal.alpha = 0;
-            self.buttonZero.frame = CGRectMake(6, 279, 205, 55);
-        }];
+        [self.switchDollarPercent setSelectedSegmentIndex:0];
         
+        [self.formatter setNumberStyle: NSNumberFormatterCurrencyStyle];
+        self.buttonDecimal.hidden = YES;
         self.display.text = [self.formatter stringFromNumber:self.dataSource.taxAmount];
     }
+    
+    self.inDollars = !isPercent;
 }
 
 // called to switch form from % to $ mode and back again
-- (IBAction)switchMode:(UISwitch *)sender {
+- (IBAction)switchMode:(UISegmentedControl *)sender {
     self.userIsEnteringNumber = NO;
-    [self setupForm:!sender.on];
-}
-
-- (IBAction)switchDollars:(UIButton *)sender {
-    self.userIsEnteringNumber = NO;
-    
-    bool temp = sender.selected;
-    [self setupForm:temp];
-    self.buttonUseDollars.selected = !temp;
+    [self setupForm: sender.selectedSegmentIndex == 1];
 }
 
 // called when key is pressed on the keypad
 - (IBAction)digitPress:(UIButton *)sender {
     
-    if(self.buttonUseDollars.selected) {
+    if(self.inDollars) {
         if(self.userIsEnteringNumber) {
             //we assume 4 digit values
             NSString *tempNewValue = [self.display.text stringByReplacingOccurrencesOfString:@"." withString:@""];
@@ -130,10 +123,8 @@
         if((range.length > 0) & ((self.display.text.length - range.location) > 4)) {
             return;
         }
-        self.dataSource.inDollars = YES;
         self.display.text = [tempNewValue stringByAppendingString:@"%"];
     } else {
-        self.dataSource.inDollars = NO;
         self.display.text = [NSString stringWithFormat:@"%@%%",sender.currentTitle];
         self.userIsEnteringNumber = YES;
     }
@@ -155,7 +146,7 @@
 // remove the last character in the display, if non would be left, reset to 0
 - (IBAction)pressUndo {
     self.userIsEnteringNumber = YES;    
-    if(self.buttonUseDollars.selected) {
+    if(self.inDollars) {
         self.display.text= [self.display.text substringToIndex:(self.display.text.length-1)];
 
         //slide decimal over one place now
@@ -197,17 +188,7 @@
     
 	// Do any additional setup after loading the view.
     self.formatter = [[NSNumberFormatter alloc] init];
-    
-    if(self.dataSource.inDollars) {
-        [self setupForm:NO];
-        self.buttonUseDollars.selected = YES;
-    } else {
-        [self setupForm:YES];
-        self.buttonUseDollars.selected = NO;
-    }
-    
-    self.buttonUseDollars.layer.borderColor = [UIColor colorWithWhite:0.8f alpha:1.0f].CGColor;
-    self.buttonUseDollars.layer.borderWidth = 1.0f;
+    [self setupForm:!self.dataSource.inDollars];
 }
 
 - (void)viewDidUnload
@@ -217,9 +198,7 @@
     [self setButtonDecimal:nil];
     [self setButtonZero:nil];
     [self setButtonDelete:nil];
-    [self setButtonUseDollars:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

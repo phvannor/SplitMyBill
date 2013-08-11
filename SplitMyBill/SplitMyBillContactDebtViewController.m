@@ -16,20 +16,20 @@ static NSString *const appID = @"1161";
 static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
 
 @interface SplitMyBillContactDebtViewController () <DebtEditorDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
-@property (weak, nonatomic) IBOutlet UILabel *labelOwes;
-@property (weak, nonatomic) IBOutlet UILabel *labelOwesDesc;
+
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *labelOwesDesc;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *labelOwes;
+
 @property (strong, nonatomic) Debt *debt;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) NSInteger debtRow;
 @property (weak, nonatomic) IBOutlet UIButton *settleButton;
 @property (nonatomic, retain) NSFetchedResultsController *fetchedResultsController;
-@property (weak, nonatomic) IBOutlet UILabel *labelContactName;
 
 @property (nonatomic) bool paypalEnabled;
 @property (nonatomic) bool venmoEnabled;
 
 - (IBAction)buttonAdd:(id)sender;
-- (IBAction)buttonNavigationBack;
 @end
 
 @implementation SplitMyBillContactDebtViewController
@@ -39,11 +39,6 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
 @synthesize fetchedResultsController = _fetchedResultsController;
 @synthesize paypalEnabled = _paypalEnabled;
 @synthesize venmoEnabled = _venmoEnabled;
-
-- (IBAction)buttonNavigationBack
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
 
 - (NSFetchedResultsController *)fetchedResultsController {
     
@@ -139,26 +134,26 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
     NSInteger owes = [self.contact.owes integerValue];
     if(owes != 0) {
         if(owes>0) {
-            self.labelOwesDesc.text = @"Owes you:";
-            self.labelOwes.textColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
+            self.labelOwesDesc.title = @"Owes you:";
+            self.labelOwes.tintColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
         } else {
-            self.labelOwes.textColor = [UIColor colorWithRed:0.9 green:0.0 blue:0.0 alpha:1.0];
-            self.labelOwesDesc.text = @"You owe:";
+            self.labelOwesDesc.title = @"You owe:";
+            self.labelOwes.tintColor = [UIColor colorWithRed:0.9 green:0.0 blue:0.0 alpha:1.0];
         }
-        self.labelOwesDesc.textAlignment = UITextAlignmentLeft;
+        
         self.settleButton.enabled = YES;
-        self.labelOwes.hidden = NO;
-        self.labelOwes.text = [BillLogic formatMoneyWithInt:owes];
+        self.labelOwes.title = [BillLogic formatMoneyWithInt:owes];
     } else {
-        self.labelOwesDesc.textAlignment = UITextAlignmentRight;
+        
         self.settleButton.enabled = NO;
-        self.labelOwes.hidden = YES;
-        self.labelOwesDesc.text = @"No current debts";        
+        self.labelOwes.title = @"";
+        self.labelOwesDesc.title = @"No current debts";
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [self.navigationController setToolbarHidden:NO animated:NO];    
     self.settleButton.enabled = ([self.contact.owes integerValue] != 0);
 }
                                  
@@ -166,8 +161,8 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    self.navigationItem.title = self.contact.name;
-    self.labelContactName.text = self.contact.name;
+    //self.navigationItem.title = self.contact.name;
+    self.title = self.contact.name;
     
     self.fetchedResultsController = nil;
     NSError *error;
@@ -180,7 +175,7 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
 
         return;
 	}
-    self.paypalEnabled = YES;
+    self.paypalEnabled = NO;
     
     [self configureOwesField];    
 }
@@ -195,8 +190,6 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
     [self setLabelOwes:nil];
     [self setLabelOwesDesc:nil];
     [self setTableView:nil];
-    [self setSettleButton:nil];
-    [self setLabelContactName:nil];
     [super viewDidUnload];
 }
 
@@ -374,7 +367,6 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
     // The fetch controller is about to start sending change notifications, so prepare the table view for updates.
     [self.tableView beginUpdates];
 }
-
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
     

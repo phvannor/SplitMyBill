@@ -75,6 +75,11 @@
     [self.textOwed becomeFirstResponder];
 }
 
+- (void) viewWillAppear:(BOOL)animated
+{
+    [self.navigationController setToolbarHidden:YES animated:animated];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -107,8 +112,8 @@
     
 }
 
-//positive -> owes me
-//negative -> i owe
+// positive -> owes me
+// negative -> i owe
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     if(textField.tag == 1) {

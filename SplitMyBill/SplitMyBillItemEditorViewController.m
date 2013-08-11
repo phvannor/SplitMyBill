@@ -10,6 +10,7 @@
 #import "BillUser.h"
 #import "BillLogic.h"
 #import <QuartzCore/QuartzCore.h>
+#import "TestFlight.h"
 
 @interface SplitMyBillItemEditorViewController () <UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIActionSheetDelegate>
 @property (weak, nonatomic) IBOutlet UISwitch *coupon;
@@ -20,7 +21,6 @@
 @property (nonatomic) bool drillingIn;
 @property (nonatomic) NSInteger valueInCents;
 
-- (IBAction)buttonNavigationBack;
 - (IBAction)deleteClose:(id)sender;
 - (IBAction)accept:(id)sender;
 - (IBAction)addNewPress:(id)sender;
@@ -41,10 +41,6 @@
 @synthesize item = _item;
 @synthesize drillingIn = _drillingIn;
 @synthesize valueInCents = _valueInCents;
-
-- (IBAction)buttonNavigationBack {
-    [self.navigationController popViewControllerAnimated:YES];
-}
 
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     self.drillingIn = YES;
@@ -176,14 +172,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
+    [self.navigationController setToolbarHidden:NO animated:YES];
+    
     if(self.userList.count == 1) {
         self.scrollSplit.frame = CGRectMake(2, 350, 316, 63);
         
         self.scrollSplit.contentSize = CGSizeMake(965, 63);
          for(NSInteger i = 0; i < 10; i++) {
              UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(72*i, 0, 72, 63)];
-             label.textAlignment = UITextAlignmentCenter;
+             label.textAlignment = NSTextAlignmentCenter;
              label.opaque = NO;
              label.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0];
              label.textColor = [UIColor whiteColor];

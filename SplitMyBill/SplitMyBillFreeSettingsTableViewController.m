@@ -24,6 +24,8 @@
 #import "SplitMyBillRoundingSettingsViewController.h"
 #import "TestFlight.h"
 #import "SplitMyBillContactEditorViewController.h"
+#import "TaxViewController.h"
+#import "TipViewController.h"
 
 @interface SplitMyBillFreeSettingsTableViewController () <TipViewDataSource, TaxViewDataSource, RoundingViewDataSource, ContactEditorDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -65,8 +67,6 @@
 
 - (IBAction)buttonNavigationBack:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-    
-    //[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void) changeUserTotalDisplayToSimple:(bool)simple {
@@ -82,20 +82,20 @@
         [(SplitMyBillContactEditorViewController *)segue.destinationViewController setUser:self.user];
     } else if([segue.identifier isEqualToString:@"rounding"]) {
         [segue.destinationViewController setRoundingDataSource:self];
-    } else {
-        [segue.destinationViewController setDataSource:self];
+    } else if([segue.identifier isEqualToString:@"edit tip"]){
+        [(TipViewController *)segue.destinationViewController setDataSource:self];
+    } else if([segue.identifier isEqualToString:@"edit tax"]) {
+        [(TaxViewController *)segue.destinationViewController setDataSource:self];
     }
 }
 
 - (void) viewDidAppear:(BOOL)animated {
-    [self.navigationController setToolbarHidden:YES animated:YES];
-    
     if(self.user.isDirty) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:[NSKeyedArchiver archivedDataWithRootObject:self.user] forKey:@"default user"];    
         [defaults synchronize];
         
-        NSArray *rows = [NSArray arrayWithObjects:[NSIndexPath indexPathForRow:0 inSection:3], nil];
+        NSArray *rows = @[[NSIndexPath indexPathForRow:0 inSection:3]];
         [self.tableView reloadRowsAtIndexPaths:rows withRowAnimation:NO];        
     }
 }
@@ -103,6 +103,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSData *defaultUser = [defaults objectForKey:@"default user"];
     
@@ -165,14 +168,14 @@
             return @"Tip & Tax";
             break;
         case SECTION_ROUNDING:
-            return @"Rounding";
+            return @"Rounding Method";
             break;            
         case SECTION_DISPLAY:
-            return @"User Total Display";
+            return @"User Total Display:";
         case SECTION_LINKS:
             return @"Links";
         case SECTION_DISCOUNTS:
-            return @"Discounts";
+            return @"Discounts:";
         default:
             return @"Default User";
             break;
@@ -185,12 +188,12 @@
     [formatter setNumberStyle: NSNumberFormatterDecimalStyle];
 
     static NSString *CellIdentifier = @"setting info";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    cell.accessoryType = UITableViewCellAccessoryNone;
+    UITableViewCell *cell;
     
     // Configure the cell...
     switch (indexPath.section) {
         case SECTION_TIPTAX:
+            cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
             if(indexPath.row == 1) {
                 cell.textLabel.text = @"Tip";
                 NSDecimalNumber *tip = [self.tipPercent decimalNumberByMultiplyingByPowerOf10:2];
@@ -203,54 +206,56 @@
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;            
             break;
         case SECTION_ROUNDING:
-            cell.textLabel.text = @"Method";
+            cell = [tableView dequeueReusableCellWithIdentifier:@"setting simple"];
+            
             if(self.roundingAmount > 0) {
                 if(self.roundingAmount == 100) {
-                    cell.detailTextLabel.text = @"Round Up ($1.00)";                    
+                    cell.textLabel.text = @"Round Up ($1.00)";
                 } else if(self.roundingAmount == 5) {
-                    cell.detailTextLabel.text = @"Round Up ($0.05)";
+                    cell.textLabel.text = @"Round Up ($0.05)";
                 } else {
-                    cell.detailTextLabel.text = [@"Round Up (" stringByAppendingFormat:@"$0.%d)", self.roundingAmount];                    
+                    cell.textLabel.text = [@"Round Up (" stringByAppendingFormat:@"$0.%d)", self.roundingAmount];                    
                 }
             } else {
-                cell.detailTextLabel.text = @"Exact";                
+                cell.textLabel.text = @"Exact";                
             }
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
+            
         case SECTION_DISCOUNTS:
-            cell.textLabel.text = @"";
+            cell = [tableView dequeueReusableCellWithIdentifier:@"setting simple"];
             cell.accessoryType = UITableViewCellAccessoryNone;
             if(indexPath.row == 0) {
-                cell.detailTextLabel.text = @"Apply before tax";
+                cell.textLabel.text = @"Apply before tax";
                 if([self getDiscountsPreTax])
                     cell.accessoryType = UITableViewCellAccessoryCheckmark;
             } else {
-                cell.detailTextLabel.text = @"Apply after tax";
+                cell.textLabel.text = @"Apply after tax";
                 if(![self getDiscountsPreTax])
                     cell.accessoryType = UITableViewCellAccessoryCheckmark;
             }
             break;
             
-            
         case SECTION_DISPLAY:
-            cell.textLabel.text = @"";
+            cell = [tableView dequeueReusableCellWithIdentifier:@"setting simple"];
             if(indexPath.row == 0)
-                cell.detailTextLabel.text = @"Tip+Total";           
+                cell.textLabel.text = @"Tip+Total";
             else
-                cell.detailTextLabel.text = @"Total, Tip, and Tip+Total";
+                cell.textLabel.text = @"Total, Tip, and Tip+Total";
             
             if([self getUserTotalOptionSelected:indexPath.row])
                 cell.accessoryType = UITableViewCellAccessoryCheckmark;
             break;
+            
         case SECTION_USER:
-            cell.textLabel.text = @"Defaults";
-            cell.detailTextLabel.text = [self.user.name stringByAppendingFormat:@" (%@)",self.user.abbreviation];
+            cell = [tableView dequeueReusableCellWithIdentifier:@"setting simple"];
+            cell.textLabel.text = [self.user.name stringByAppendingFormat:@" (%@)",self.user.abbreviation];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;            
             break;
-        case SECTION_LINKS:
-            cell.textLabel.text = @"";
-            cell.detailTextLabel.text = @"Rate on iTunes";
             
+        case SECTION_LINKS:
+            cell = [tableView dequeueReusableCellWithIdentifier:@"setting simple"];
+            cell.textLabel.text = @"Rate on iTunes";
             break;
     }
     return cell;
@@ -398,7 +403,6 @@
 
 - (void) ContactEditorDelete:(id)Editor {
     //restore back to defaults
-    
     [self.navigationController popViewControllerAnimated:YES];
 }
 
