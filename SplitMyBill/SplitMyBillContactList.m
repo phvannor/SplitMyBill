@@ -29,11 +29,6 @@
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize contactList = _contactList;
 
-- (IBAction)buttonNavigationBack
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 - (NSFetchedResultsController *)fetchedResultsController {
     
     if (_contactList != nil)
@@ -46,7 +41,6 @@
     [fetchRequest setEntity:entity];
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
     [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sort]];
-    //[fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"contact == %@", self.contact.objectID]];
     [fetchRequest setFetchBatchSize:20];
     
     [NSFetchedResultsController deleteCacheWithName:@"AllContacts"];
@@ -92,6 +86,7 @@
 }
 
 - (void) viewWillAppear:(BOOL)animated {
+    [self.navigationController setNavigationBarHidden:NO animated: animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
@@ -382,8 +377,6 @@
     } else {
         [self.managedObjectContext rollback];
     }
-
-    [self.navigationController popViewControllerAnimated:YES];
     self.editContact = nil;
 }
 

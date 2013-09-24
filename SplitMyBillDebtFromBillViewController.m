@@ -37,13 +37,20 @@
 
 
 - (IBAction)buttonSave:(id)sender {
-    [self.delegate BillAddDebtDelegate:self CloseForUser:nil AndSave:YES];
+    [self.delegate BillAddDebtDelegate:self AndSave:YES];
 }
 
 - (IBAction)buttonCancel:(id)sender {
-    [self.delegate BillAddDebtDelegate:self CloseForUser:nil AndSave:NO];
+    [self.delegate BillAddDebtDelegate:self AndSave:NO];
 }
 
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];

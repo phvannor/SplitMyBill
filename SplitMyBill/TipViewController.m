@@ -12,7 +12,6 @@
 @interface TipViewController ()
 @property (nonatomic) bool userIsEnteringNumber;
 @property (weak, nonatomic) IBOutlet UIButton *buttonDecimal;
-@property (weak, nonatomic) IBOutlet UIButton *buttonZero;
 @property (weak, nonatomic) IBOutlet UIButton *button15;
 @property (weak, nonatomic) IBOutlet UIButton *button18;
 @property (weak, nonatomic) IBOutlet UIButton *button20;
@@ -27,7 +26,6 @@
 @implementation TipViewController
 @synthesize userIsEnteringNumber = _userIsEnteringNumber;
 @synthesize buttonDecimal = _buttonDecimal;
-@synthesize buttonZero = _buttonZero;
 @synthesize button15 = _button15;
 @synthesize button18 = _button18;
 @synthesize button20 = _button20;
@@ -241,7 +239,6 @@
     [self setDisplay:nil];
     [self setBanner:nil];
     [self setButtonDecimal:nil];
-    [self setButtonZero:nil];
     [self setButton15:nil];
     [self setButton18:nil];
     [self setButton20:nil];

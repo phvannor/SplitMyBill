@@ -11,6 +11,7 @@
 #import "SplitMyBillMainScreenViewController.h"
 #import "SplitMyBillContactDebtViewController.h"
 #import "TestFlight.h"
+//#import "SMBMainTabController.h"
 
 @interface SplitMyBillAppDelegate()
 
@@ -30,13 +31,13 @@
     [TestFlight takeOff:@"92e7748c-986f-4326-b355-50beaef5a779"];
     
     //give our default view the object context
+    
     UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
     SplitMyBillMainScreenViewController *controller = (SplitMyBillMainScreenViewController *)navigationController.topViewController;
     controller.managedObjectContext = self.managedObjectContext;
-
     
     [[UINavigationBar appearance] setTitleTextAttributes:@{
-        NSFontAttributeName: [UIFont fontWithName:@"Avenir-Medium" size:22.0],
+        NSFontAttributeName: [UIFont fontWithName:@"Avenir-Light" size:20.0],
         NSForegroundColorAttributeName: [UIColor blackColor]
         }];
     

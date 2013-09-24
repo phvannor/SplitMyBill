@@ -398,7 +398,6 @@
             self.user = [NSKeyedUnarchiver unarchiveObjectWithData:defaultUser];
         }
     }
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void) ContactEditorDelete:(id)Editor {

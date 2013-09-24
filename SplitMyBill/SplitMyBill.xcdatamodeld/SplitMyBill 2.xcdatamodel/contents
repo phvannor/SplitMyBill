@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2057" systemVersion="11G63" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3389" systemVersion="12E55" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Bill" representedClassName="Bill" syncable="YES">
-        <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="created" attributeType="Date" indexed="YES" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="modified" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="rounding" attributeType="Integer 16" minValueString="0" defaultValueString="0" syncable="YES"/>
@@ -57,11 +57,11 @@
         <relationship name="contact" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Contact" inverseName="debts" inverseEntity="Contact" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Bill" positionX="160" positionY="192" width="128" height="240"/>
-        <element name="BillItem" positionX="160" positionY="192" width="128" height="135"/>
-        <element name="BillPerson" positionX="160" positionY="192" width="128" height="165"/>
-        <element name="Contact" positionX="0" positionY="0" width="128" height="165"/>
-        <element name="ContactContactInfo" positionX="178" positionY="45" width="128" height="90"/>
-        <element name="Debt" positionX="187" positionY="216" width="128" height="135"/>
+        <element name="Bill" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="BillItem" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="BillPerson" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Contact" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="ContactContactInfo" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Debt" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>

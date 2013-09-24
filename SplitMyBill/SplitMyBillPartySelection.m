@@ -16,6 +16,7 @@
 #import "ContactContactInfo.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import "BillPerson.h"
+#import "TestFlight.h"
 
 @interface SplitMyBillPartySelection() <UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate, ABPeoplePickerNavigationControllerDelegate>
 
@@ -46,18 +47,8 @@
     if (self) {
         // Initialization code
     }
-    
     return self;
 }
-
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-/*
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 - (bool) loadData {
     //begin loading up our saved contacts
@@ -71,7 +62,6 @@
     
     self.genericCount = self.dataSource.logic.numberOfGenericUsers + 1;    
     self.partySize.text = [NSString stringWithFormat:@"%d", self.dataSource.logic.userCount];
-    
     
     return YES;
 }
@@ -298,15 +288,6 @@
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return NO; //disallow deletion for now
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    /*
-     if (editingStyle == UITableViewCellEditingStyleDelete) {
-     
-     }
-     */
 }
 
 #pragma mark - Fetched Controller Delegate
@@ -560,8 +541,6 @@
 #pragma mark - ContactEditorDelegate
 - (void) ContactEditor:(id)Editor Close:(bool)SaveChanges
 {
-    //
-    
     if(self.editPath.section != SECTION_CONTACTS) {
         if(SaveChanges) {
             BillUser *user;
@@ -613,8 +592,7 @@
             [self.dataSource.managedObjectContext rollback];
         }
     }
-    
-    [self.delegate popController];    
+  
     self.editPath = nil;
 }
 

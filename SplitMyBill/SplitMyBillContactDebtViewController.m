@@ -23,7 +23,6 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
 @property (strong, nonatomic) Debt *debt;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) NSInteger debtRow;
-@property (weak, nonatomic) IBOutlet UIButton *settleButton;
 @property (nonatomic, retain) NSFetchedResultsController *fetchedResultsController;
 
 @property (nonatomic) bool paypalEnabled;
@@ -79,21 +78,7 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
     
     //create the actionsheet first
     [action addButtonWithTitle:@"Settle In Full"];
-    /*
-    if(self.paypalEnabled) {
-        //add the pay with PayPal button...?
-        PayPalPaymentType paymentType = TYPE_PERSONAL;
-        UIButton *button = [[PayPal getPayPalInst] getPayButtonWithTarget:self andAction:@selector(payWithPayPal) andButtonType:BUTTON_278x43];
-                            
-       //[action addButtonWithTitle:@"Use Paypal"];
-        [action addSubview:button];
-        index++;
-    }
-    */
-    if(self.venmoEnabled) {
-        [action addButtonWithTitle:@"Use Venmo"];
-        index++;
-    }
+    
     [action addButtonWithTitle:@"Cancel"];
     [action setCancelButtonIndex:index];
     
@@ -141,11 +126,9 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
             self.labelOwes.tintColor = [UIColor colorWithRed:0.9 green:0.0 blue:0.0 alpha:1.0];
         }
         
-        self.settleButton.enabled = YES;
         self.labelOwes.title = [BillLogic formatMoneyWithInt:owes];
     } else {
         
-        self.settleButton.enabled = NO;
         self.labelOwes.title = @"";
         self.labelOwesDesc.title = @"No current debts";
     }
@@ -153,8 +136,8 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [self.navigationController setToolbarHidden:NO animated:NO];    
-    self.settleButton.enabled = ([self.contact.owes integerValue] != 0);
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [self.navigationController setToolbarHidden:NO animated:NO];
 }
                                  
 - (void)viewDidLoad

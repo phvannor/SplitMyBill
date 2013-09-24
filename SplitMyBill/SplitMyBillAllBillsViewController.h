@@ -7,7 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Bill.h"
+
+@protocol BillListDelegate
+- (Bill *) BillListCreateBill:(id)ListController;
+@end
 
 @interface SplitMyBillAllBillsViewController : UIViewController
 @property (nonatomic, weak) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, weak) id<BillListDelegate> delegate;
+
 @end

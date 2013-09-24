@@ -13,20 +13,29 @@
 #import "Contact.h"
 #import "ContactContactInfo.h"
 #import "SplitMyBillContactDebtViewController.h"
-#import "SplitMyBillQuickSplitViewController.h"
 #import "SplitMyBillAllBillsViewController.h"
-#import "SplitMyBillEditorViewController.h"
+#import "SMBBillNavigationViewController.h"
 
-@interface SplitMyBillMainScreenViewController () <UIScrollViewDelegate>
+@interface SplitMyBillMainScreenViewController () <UICollectionViewDataSource, UICollectionViewDelegate, BillListDelegate>
 
 @property (nonatomic, strong) BillLogic *BillLogic;
-@property (weak, nonatomic) IBOutlet UIScrollView *contactScroll;
-@property (weak, nonatomic) IBOutlet UIPageControl *contactPage;
-@property (nonatomic, strong) NSMutableArray *contactList;
+@property (nonatomic, strong) NSArray *debtList;
+@property (nonatomic, strong) NSArray *billList;
+
+@property (weak, nonatomic) IBOutlet UICollectionView *grid;
+@property (nonatomic) bool loadingGrid;
+@property (nonatomic) NSInteger loadedData;
+@property (nonatomic, weak) Contact *selectedContact;
+
+@property (weak, nonatomic) IBOutlet UIButton *buttonSettings;
+
+@property (strong, nonatomic) NSArray *gridConstraints;
+@property (strong, nonatomic) NSArray *addedContstraints;
+@property (strong, nonatomic) Bill *editBill;
+
 @end
 
 @implementation SplitMyBillMainScreenViewController
-@synthesize contactList = _contactList;
 @synthesize BillLogic = _BillLogic;
 - (BillLogic *) BillLogic {
     if(!_BillLogic) _BillLogic = [[BillLogic alloc] init];
@@ -39,20 +48,23 @@
     [self performSegueWithIdentifier:@"Settings" sender:self];
 }
 
-- (IBAction)pushSimple:(id)sender {
-    self.BillLogic = [[BillLogic alloc] init];
-    [self performSegueWithIdentifier:@"simple split" sender:self];    
+@synthesize managedObjectContext = _managedObjectContext;
+
+- (IBAction)buttonNew:(id)sender {
+    self.editBill = [self createBill];
+    [self performSegueWithIdentifier:@"bill" sender:self];
 }
 
-@synthesize managedObjectContext = _managedObjectContext;
-- (IBAction)buttonNew:(id)sender {
-    self.BillLogic = [[BillLogic alloc] init];
-    
-    [self performSegueWithIdentifier:@"new bill" sender:self];
-    
+- (IBAction)actionAllDebts:(id)sender {
+    [self performSegueWithIdentifier:@"contacts" sender:nil];
+}
+
+- (IBAction)actionAllBills:(id)sender {
+    [self performSegueWithIdentifier:@"bills" sender:nil];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    
     if([segue.identifier isEqualToString:@"contacts"]) {
         SplitMyBillContactList *controller = segue.destinationViewController;
         controller.managedObjectContext = self.managedObjectContext;
@@ -61,42 +73,29 @@
     if([segue.identifier isEqualToString:@"bills"]) {
         SplitMyBillAllBillsViewController *controller = segue.destinationViewController;
         controller.managedObjectContext = self.managedObjectContext;
+        controller.delegate = self;
         return;
     }
-    if([segue.identifier isEqualToString:@"new bill"]) {
-        SplitMyBillEditorViewController *controller = segue.destinationViewController;
+    if([segue.identifier isEqualToString:@"bill"]) {
+        SMBBillNavigationViewController *controller = segue.destinationViewController;
         
-        [self  createBill];
+        self.BillLogic = [[BillLogic alloc] initWithBill:self.editBill andContext:self.managedObjectContext];
         
         controller.bill = self.BillLogic.bill;
         controller.billlogic = self.BillLogic;
         controller.managedObjectContext = self.managedObjectContext;
+        
         return;
     }
     if([segue.identifier isEqualToString:@"user debt"]) {
-        SplitMyBillContactDebtViewController *controller = segue.destinationViewController;
-        [controller setManagedObjectContext:self.managedObjectContext];
-        NSInteger index = (self.contactScroll.contentOffset.x / self.contactScroll.frame.size.width);
-        [controller setContact:[self.contactList objectAtIndex:index]];
-    }
-    if([segue.identifier isEqualToString:@"simple split"]) {
-        SplitMyBillQuickSplitViewController *controller = segue.destinationViewController;
+         SplitMyBillContactDebtViewController *controller = segue.destinationViewController;
         
-        [self createBill];
-        self.BillLogic.bill.type = [NSNumber numberWithInteger:1];
-
-        BillItem *item = [NSEntityDescription insertNewObjectForEntityForName:@"BillItem" inManagedObjectContext:self.managedObjectContext];
-        item.price = [NSNumber numberWithInteger:0];
-        
-        BillLogicItem *newItem = [[BillLogicItem alloc] initWithItem:item];
-        [self.BillLogic addItem:newItem];
-        
-        [controller setLogic:self.BillLogic];
-        [controller setManagedObjectContext:self.managedObjectContext];
+        controller.managedObjectContext = self.managedObjectContext;
+        controller.contact = self.selectedContact;
     }
 }
 
-- (void) createBill {
+- (Bill *) createBill {
     //create new bill entity...
     Bill * bill = [NSEntityDescription insertNewObjectForEntityForName:@"Bill" inManagedObjectContext:self.managedObjectContext];
     
@@ -116,13 +115,7 @@
     bill.tip = [NSDecimalNumber decimalNumberWithString:string];
     bill.tipInDollars = [NSDecimalNumber numberWithBool:NO];
     bill.type = [NSNumber numberWithInt:0];
-    
-    self.BillLogic = [[BillLogic alloc] initWithBill:bill andContext:self.managedObjectContext];
-    self.BillLogic.tax = bill.tax;
-    self.BillLogic.tip = bill.tip;
-    
-    //!!! todo add rounding property into bill object
-    self.BillLogic.roundingAmount = [defaults integerForKey:@"roundValue"];
+    bill.rounding = [NSNumber numberWithInteger:[defaults integerForKey:@"roundValue"]];
     
     //save the newly created bill
     NSError *error;
@@ -130,18 +123,16 @@
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Error creating a bill" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
         
         [alert show];
-        exit(-1);
-        return;
+        return nil;
     }
     
     //self defaults to being present...
-    
+    self.BillLogic = [[BillLogic alloc] initWithBill:bill andContext:self.managedObjectContext];
     BillUser *user = [self makeUserSelfwithDefaults:nil];
     [self.BillLogic addUser:user];
-    
     self.BillLogic.bill = bill;
     
-    return;
+    return bill;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -153,228 +144,100 @@
     return self;
 }
 
-- (void)toUserDebts
-{
-    if(self.contactList.count == 0)
-        [self performSegueWithIdentifier:@"contacts" sender:self];
-    else
-        [self performSegueWithIdentifier:@"user debt" sender:self];
-}
-
-NSInteger contactSort(id obj1, id obj2, void *context) {
-    Contact *one = (Contact *)obj1;
-    Contact *two = (Contact *)obj2;
-    
-    NSInteger absOne = abs([one.owes integerValue]);
-    NSInteger absTwo = abs([two.owes integerValue]);
-    
-    if(absOne  > absTwo)
-        return NSOrderedDescending;
-    
-    if(absOne  < absTwo)
-        return NSOrderedDescending;
-    
-    return NSOrderedSame;        
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [self.navigationController setToolbarHidden:YES animated:YES];
-    //[self.navigationController setNavigationBarHidden:NO animated:YES];
-    
+- (void) loadBillsIntoGrid {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription
-            entityForName:@"Contact"
-            inManagedObjectContext:self.managedObjectContext];
+                                   entityForName:@"Bill"
+                                   inManagedObjectContext:self.managedObjectContext];
     
-    //[fetchRequest setFetchLimit:3];
-    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"owes" ascending:NO];
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"created" ascending:NO];
+    
     [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sort]];
-    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"owes != %@", [NSNumber numberWithInt:0]]];
+    [fetchRequest setFetchLimit:5];
     [fetchRequest setEntity:entity];
-    NSError *error;
-    NSMutableArray *allContacts = [[self.managedObjectContext executeFetchRequest:fetchRequest error:&error] mutableCopy];
     
-    //pull out the top three values now...
-    self.contactList = [[NSMutableArray alloc] init];
+    NSError *error;
+    self.billList = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    
+    self.loadedData = 0;
+    self.loadingGrid = NO;
+    [self.grid reloadData];
+}
+
+- (void) loadDebtsIntoGrid {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription
+                                   entityForName:@"Contact"
+                                   inManagedObjectContext:self.managedObjectContext];
+
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"owes" ascending:NO];
+    
+    [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sort]];
+    [fetchRequest setEntity:entity];
+    [fetchRequest setFetchLimit:8];
+    
+    NSError *error;
+    self.debtList = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    
+    //pull out the top eight values now...
+    /*
+    self.dataList = [[NSMutableArray alloc] init];
     NSInteger front = 0;
     NSInteger back = allContacts.count - 1;
     if(back >= 0) {
         Contact *frontContact = [allContacts objectAtIndex:front];
         Contact *backContact = [allContacts objectAtIndex:back];
         
-        for(NSInteger i = 0; i < 3; i++) {
+        for(NSInteger i = 0; i < 8; i++) {
             if(front == back) {
-                [self.contactList addObject:frontContact];
+                [self.dataList addObject:frontContact];
                 break;
             }
             
             if(abs([frontContact.owes integerValue]) >= abs([backContact.owes integerValue])) {
-                [self.contactList addObject:frontContact];
+                [self.dataList addObject:frontContact];
                 front++;
                 frontContact = [allContacts objectAtIndex:front];
             } else {
-                [self.contactList addObject:backContact];
+                [self.dataList addObject:backContact];
                 back--;
                 backContact = [allContacts objectAtIndex:back];
             }
         }
     }
+    */
     
-    float height = self.contactScroll.frame.size.height;
-    float width = self.contactScroll.frame.size.width;
+    //refresh grid now
+    self.loadedData = 1; /* Debts */
+    self.loadingGrid = NO;
+    [self.grid reloadData];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
     
-    self.contactScroll.backgroundColor = [UIColor colorWithWhite:0.2 alpha:1.0];
-    if(self.contactList.count > 0) {
-        self.contactScroll.contentSize = CGSizeMake(width * self.contactList.count, height);
-        
-        [self.contactScroll setContentOffset:CGPointMake(0, 0)];
-        for(NSUInteger i = 0; i < self.contactList.count; i++) {
-            NSInteger offset = i*width;
-            Contact *contact = [self.contactList objectAtIndex:i];
-                        
-            UIButton *button = (UIButton *)[self.contactScroll viewWithTag:(i*10 + 1)];
-            if(!button) {
-                button = [[UIButton alloc] initWithFrame:CGRectMake(offset, 0, height, height)];
-                button.tag = i*10 + 1;
-                [self.contactScroll addSubview:button];
-                [button addTarget:self action:@selector(toUserDebts) forControlEvents:UIControlEventTouchUpInside];                
-            }
-            
-            bool imageSet = NO;
-            ABRecordID contactID = (ABRecordID)[contact.uniqueid integerValue];
-            if(contactID != kABRecordInvalidID) {
-                CFErrorRef err;
-                ABAddressBookRef ab = ABAddressBookCreateWithOptions(NULL, &err);
-                
-                ABRecordRef record = ABAddressBookGetPersonWithRecordID(ab, contactID);
-                if(record) {
-                    if(ABPersonHasImageData(record)) {
-                        NSData *imageData = (NSData *)CFBridgingRelease(ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail));
-                        
-                        [button setBackgroundImage:[[UIImage alloc] initWithData:imageData] forState:UIControlStateNormal];
-                        imageSet = YES;
-                    }
-                }
-            }
-            if(!imageSet)
-                [button setBackgroundImage:[UIImage imageNamed:@"person.png"] forState:UIControlStateNormal];
-            
-            UILabel *label = (UILabel *)[self.contactScroll viewWithTag:(i*10 + 2)];
-            if(!label) {
-                label = [[UILabel alloc] initWithFrame:CGRectMake(offset, 0, width, 48)];
-                label.tag = i*10 + 2;
-                [self.contactScroll addSubview:label];
-                label.font = [UIFont fontWithName:@"Helvetica" size:22];
-                label.backgroundColor = [UIColor colorWithWhite:0.0 alpha:.3];
-                label.textColor = [UIColor whiteColor];
-            }
-            label.text = [@" " stringByAppendingString:contact.name];
-        
-            label = (UILabel *)[self.contactScroll viewWithTag:(i*10 + 3)];
-            UILabel *label2 = (UILabel *)[self.contactScroll viewWithTag:(i*10 + 4)];
-            if(!label) {
-                label = [[UILabel alloc] initWithFrame:CGRectMake(offset + height, height - 35, width - height, 35)];
-                label.tag = i*10 + 3;
-                [self.contactScroll addSubview:label];
-                label.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
-                label.font = [UIFont fontWithName:@"Avenir-Medium" size:24];                
-                label.textColor = [UIColor whiteColor];
-                label.textAlignment = NSTextAlignmentCenter;
-                label2 = [[UILabel alloc] initWithFrame:CGRectMake(offset + height, height - 47, width - height, 12)];
-                label2.tag = i*10 + 4;
-                [self.contactScroll addSubview:label2];
-                label2.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
-                label2.font = [UIFont fontWithName:@"Avenir-Medium" size:14];
-                label2.textColor = [UIColor whiteColor];
-                label2.textAlignment = NSTextAlignmentCenter;                
-            }
-            NSInteger money = [contact.owes integerValue];
-            if(money < 0) {
-                //show an "owes" labels
-                money *= -1;
-                label.textColor = [UIColor redColor];
-                label2.text = @"You owe";
-            } else {
-                label2.text = @"Owes you";
-                label.textColor = [UIColor whiteColor];
-            }
-            label.text = [BillLogic formatMoneyWithInt:money];
-        }
-        
-        self.contactPage.hidden = (self.contactList.count == 1);
-        self.contactPage.numberOfPages = self.contactList.count;
-        [self.contactPage setCurrentPage:0];
-    } else {
-        self.contactScroll.contentSize = CGSizeMake(width, height);
-        [self.contactScroll setContentOffset:CGPointMake(0, 0)];
-        
-        //place holder image
-        self.contactPage.alpha = 0.0;
-        UIButton *button = (UIButton *)[self.contactScroll viewWithTag:1];
-        if(!button) {
-            button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, height, height)];
-            button.tag = 1;
-            [button addTarget:self action:@selector(toUserDebts) forControlEvents:UIControlEventTouchUpInside];
-            [self.contactScroll addSubview:button];
-        }
-        
-        //button.imageView.image.resizingMode = UIImageResizingModeStretch;
-        [button setBackgroundImage:[UIImage imageNamed:@"person.png"] forState:UIControlStateNormal];
-        
-        UILabel *label = (UILabel *)[self.contactScroll viewWithTag:2];
-        if(!label) {
-            label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, width, 48)];
-            label.tag = 2;
-            [self.contactScroll addSubview:label];
-            label.font = [UIFont fontWithName:@"Helvetica" size:22];
-            label.backgroundColor = [UIColor colorWithWhite:0.0 alpha:.6];
-            label.textColor = [UIColor whiteColor];
-        }
-        label.text = @" You are debt free";
-        
-        label = (UILabel *)[self.contactScroll viewWithTag:3];
-        if(label) {
-            label.hidden = YES;
-        }
-        
-        label = (UILabel *)[self.contactScroll viewWithTag:4];
-        if(label) {
-            label.hidden = YES;
-        }
-    }
+    //[self.navigationController.navigationBar setBackgroundColor:[UIColor whiteColor]];
     
-    self.contactScroll.pagingEnabled = YES;
-    
+    // Reload the correct data
+    //[self loadBillsIntoGrid];
+    [self loadDebtsIntoGrid];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    //resize our UIScrollView to the correct size
-    //float height =  self.view.frame.size.height - self.contactScroll.frame.origin.y - 2;
-    //self.contactScroll.frame = CGRectMake(self.contactScroll.frame.origin.x, self.contactScroll.frame.origin.y, self.contactScroll.frame.size.width, height);
 }
 
 - (void)viewDidUnload
 {
-    [self setContactScroll:nil];
-    [self setContactPage:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-
-#pragma mark - ScrollViewDelegate
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    NSInteger page = (scrollView.contentOffset.x/self.contactScroll.frame.size.width);
-    [self.contactPage setCurrentPage:page];
 }
 
 #pragma mark - Utility Functions
@@ -393,6 +256,197 @@ NSInteger contactSort(id obj1, id obj2, void *context) {
     user.isSelf = YES;
     
     return user;
+}
+
+#pragma mark UICollectionViewDataSource
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    // Over protective grid loading logic
+    if(self.loadingGrid) {
+        return 1;
+    }
+    
+    if(section == 1) {
+        return self.billList.count;
+    } else {
+        return self.debtList.count;
+    }
+}
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 2;
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionReusableView *section;
+    
+    if([kind isEqualToString:UICollectionElementKindSectionHeader]) {
+        section = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
+        
+    } else {
+        section = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"footer" forIndexPath:indexPath];
+        
+    }
+    
+    return section;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionViewCell *cell;
+    
+    if(self.loadingGrid) {
+        cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"loadcell" forIndexPath:indexPath];
+    }
+    
+    // Bills
+    if (indexPath.section == 1) {
+        if(indexPath.row == self.billList.count) {
+            if(self.billList.count > 0) {
+                cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"viewall" forIndexPath:indexPath];
+            } else {
+                cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"nobills" forIndexPath:indexPath];
+            }
+        } else {
+            cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"billcell" forIndexPath:indexPath];
+            
+            Bill *bill = [self.billList objectAtIndex:indexPath.row];
+            
+            UILabel *title = (UILabel *)[cell viewWithTag:2];
+            title.text = bill.title;
+            
+            UILabel *cost = (UILabel *)[cell viewWithTag:1];
+            cost.text = [BillLogic formatMoneyWithInt:[bill.total integerValue]];
+            
+            // A date formatter for the time stamp.
+            static NSDateFormatter *dateFormatter = nil;
+            if (dateFormatter == nil) {
+                dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+                [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+            }
+            UILabel *date = (UILabel *)[cell viewWithTag:3];
+            date.text = [dateFormatter stringFromDate:bill.created];
+        }
+    } else {
+    
+        if(indexPath.row == self.debtList.count) {
+            if(self.debtList.count > 0) {
+                cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"viewall" forIndexPath:indexPath];
+            } else {
+                cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"nodebts" forIndexPath:indexPath];
+            }
+        } else { // Debts
+            // Show the debt details instead
+            cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"debtcell" forIndexPath:indexPath];
+        
+        Contact *contact = [self.debtList objectAtIndex:indexPath.row];
+        
+        // Show image of user...
+        UIImageView *imageView = (UIImageView *)[cell viewWithTag:1];
+        imageView.hidden = YES;
+        ABRecordID contactID = (ABRecordID)[contact.uniqueid integerValue];
+        if(contactID != kABRecordInvalidID) {
+            CFErrorRef err;
+            ABAddressBookRef ab = ABAddressBookCreateWithOptions(NULL, &err);
+            
+            ABRecordRef record = ABAddressBookGetPersonWithRecordID(ab, contactID);
+            if(record) {
+                if(ABPersonHasImageData(record)) {
+                    NSData *imageData = (NSData *)CFBridgingRelease(ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail));
+                    
+                    imageView.image = [[UIImage alloc] initWithData:imageData];
+                    [imageView.layer setCornerRadius:25.0f];
+                    imageView.clipsToBounds = YES;
+                    
+                    imageView.hidden = NO;
+                }
+            }
+        }
+        
+        UILabel *name = (UILabel *)[cell viewWithTag:4];
+        name.text = contact.name;
+        
+        UILabel *initials = (UILabel *)[cell viewWithTag:3];
+        initials.hidden = !imageView.hidden;
+        if(imageView.hidden) {
+            initials.text = contact.initials;
+            [initials.layer setCornerRadius:25.0f];
+        }
+        
+        // Show debt...
+        UILabel *debtValue = (UILabel *)[cell viewWithTag:2];
+        
+        NSInteger money = [contact.owes integerValue];
+        if(money < 0) {
+            debtValue.textColor = [UIColor redColor];
+        } else {
+            debtValue.textColor = [UIColor blackColor];
+        }
+        debtValue.text = [BillLogic formatMoneyWithInt:money];
+        }
+    }
+    
+    return cell;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(self.loadingGrid) {
+        return CGSizeMake(collectionView.frame.size.width - 10, 80);
+    }
+    
+    if(indexPath.section == 1) {
+        if(self.billList.count == 0)
+            return CGSizeMake(collectionView.frame.size.width - 10, 80);
+        
+        return CGSizeMake(100, 60);
+    }
+    
+    if(self.debtList.count == 0)
+        return CGSizeMake(collectionView.frame.size.width - 10, 80);
+    
+    return CGSizeMake(320, 150);
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(self.loadingGrid) {
+        return;
+    }
+    
+    if(indexPath.section == 1) {
+        if(self.billList.count == 0) {
+            return;
+        }
+        
+        if(self.billList.count == indexPath.row) {
+            [self performSegueWithIdentifier:@"bills" sender:self];
+            return;
+        }
+        
+        self.editBill = [self.billList objectAtIndex:indexPath.row];
+        [self performSegueWithIdentifier:@"bill" sender:self];
+        
+    } else {
+        if(self.debtList.count == 0)
+            return;
+    
+        if(indexPath.row != self.debtList.count) {
+            self.selectedContact = [self.debtList objectAtIndex:indexPath.row];
+            [self performSegueWithIdentifier:@"user debt" sender:self];
+        } else {
+            [self performSegueWithIdentifier:@"contacts" sender:self];
+        }
+    }
+}
+
+- (Bill *) BillListCreateBill:(id)ListController
+{
+    return [self createBill];
 }
 
 @end

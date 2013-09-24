@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[SMBBillNavigationViewController viewWillDisappear:]:SMBBillNavigationViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.bill.items.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[SMBBillItems tableView:numberOfRowsInSection:]:SMBBillItems.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[SMBBillItems tableView:cellForRowAtIndexPath:]:SMBBillItems.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.logic.users.count ">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

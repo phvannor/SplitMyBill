@@ -64,7 +64,7 @@
 }
 - (void) setIsDiscount:(bool)isDiscount {
     NSInteger price = [self.item.price integerValue];
-    if(price > 0) {
+    if((price > 0 && isDiscount) || (price < 0 && !isDiscount)) {
         price *= -1;
         self.item.price = [NSNumber numberWithInteger:price];
     }

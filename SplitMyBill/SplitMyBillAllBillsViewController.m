@@ -11,16 +11,12 @@
 #import <QuartzCore/QuartzCore.h>
 #import "Bill.h"
 #import "BillLogic.h"
-#import "SplitMyBillEditorViewController.h"
-#import "SplitMyBillQuickSplitViewController.h"
-#import "SMBBillController.h"
+#import "SMBBillNavigationViewController.h"
 
 @interface SplitMyBillAllBillsViewController () <NSFetchedResultsControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *bills;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-- (IBAction)buttonNavigationBack;
-
 @property (nonatomic, strong) Bill *editBill;
 @property (nonatomic, strong) BillLogic *logic;
 @end
@@ -33,87 +29,26 @@
 @synthesize logic = _logic;
 
 - (IBAction)addBill:(id)sender {
-    [self performSegueWithIdentifier:@"add bill" sender:self];
+    self.editBill = [self.delegate BillListCreateBill:self];
+    [self performSegueWithIdentifier:@"bill" sender:self];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if([segue.identifier isEqualToString:@"to bill"]) {
+    
+    if([segue.identifier isEqualToString:@"bill"]) {
          self.logic = [[BillLogic alloc] initWithBill:self.editBill andContext:self.managedObjectContext];        
         
-        //SplitMyBillEditorViewController
-        SMBBillController *controller = segue.destinationViewController;
+        SMBBillNavigationViewController *controller = segue.destinationViewController;
         controller.bill = self.editBill;
         controller.billlogic = self.logic;
         controller.managedObjectContext = self.managedObjectContext;
-        
-    } else if([segue.identifier isEqualToString:@"simple bill"]) {
-        self.logic = [[BillLogic alloc] initWithBill:self.editBill andContext:self.managedObjectContext];
-        
-        SplitMyBillQuickSplitViewController *controller = segue.destinationViewController;
-        //controller.bill = self.editBill;
-        controller.logic = self.logic;
-        controller.managedObjectContext = self.managedObjectContext;
-        
-    } else if([segue.identifier isEqualToString:@"add bill"]) {
-        
-        SplitMyBillEditorViewController *controller = segue.destinationViewController;
-        
-        //create new bill entity...
-        Bill * bill = [NSEntityDescription insertNewObjectForEntityForName:@"Bill" inManagedObjectContext:self.managedObjectContext];
-        
-        //defaults for a bill
-        bill.title = @"";
-        bill.created = [NSDate date];
-        bill.type = [NSNumber numberWithInt:1];
-        bill.taxInDollars = [NSNumber numberWithBool:NO];
-        bill.type = [NSNumber numberWithInt:0];
-        self.editBill = bill;
-        
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        NSString *string = [defaults objectForKey:@"taxRate"];
-        if(!string) string = @"0";
-        bill.tax = [NSDecimalNumber decimalNumberWithString:string];
-        
-        string = [defaults objectForKey:@"tipRate"];
-        if(!string) string = @"0";
-        bill.tip = [NSDecimalNumber decimalNumberWithString:string];
-        bill.tipInDollars = [NSDecimalNumber numberWithBool:NO];
-        
-        self.logic = [[BillLogic alloc] initWithBill:bill andContext:self.managedObjectContext];
-        self.logic.tax = bill.tax;
-        self.logic.tip = bill.tip;
-        self.logic.roundingAmount = [defaults integerForKey:@"roundValue"];
-        
-        //save the newly created bill
-        NSError *error;
-        if(![self.managedObjectContext save:&error]) {
-            //todo: error condition here
-            ///!!!
-            ///
-        }
-        
-        //self defaults to being present...
-        BillUser *user = [self makeUserSelfwithDefaults:nil];
-        [self.logic addUser:user];
-        controller.bill = bill;
-        
-        self.logic.bill = bill;
-        controller.billlogic = self.logic;
-        controller.managedObjectContext = self.managedObjectContext;
-        
-        return;
     }
 }
 
-- (IBAction)buttonNavigationBack
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 - (NSFetchedResultsController *)fetchedResultsController {
-    
-    if (self.bills != nil)
+    if (self.bills != nil) {
         return self.bills;
+    }
     
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription
@@ -147,10 +82,17 @@
     return self;
 }
 
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
 
     self.bills = nil;
     
@@ -171,14 +113,15 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    
+    // We can close this form
+    [self.navigationController popToRootViewControllerAnimated:NO];
 }
-
 
 #pragma mark - Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1; //[self.bills sections];
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -222,21 +165,19 @@
     return cell;
 }
 
-// Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return NO;
+    return YES;
 }
 
 // Override to support editing the table view.
-/*
  - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
- {
- if (editingStyle == UITableViewCellEditingStyleDelete) {
- // Delete the row from the data source
- }
- }
- */
+{
+     if (editingStyle == UITableViewCellEditingStyleDelete) {
+         // Delete the row from the data source
+         [self.managedObjectContext deleteObject:[self.bills objectAtIndexPath:indexPath]];
+     }
+}
 
 // Override to support rearranging the table view.
 /*
@@ -250,58 +191,18 @@
  */
 
 #pragma mark - Table view delegate
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
-{
-    //self.editContact = [self.contactList objectAtIndexPath:indexPath];
-    //[self performSegueWithIdentifier:@"edit contact" sender:self];
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     self.editBill = [self.bills objectAtIndexPath:indexPath];
-    if([self.editBill.type integerValue] == 1) {
-        [self performSegueWithIdentifier:@"simple bill" sender:self];
-    } else {
-        [self performSegueWithIdentifier:@"to bill" sender:self];
-    }
+    [self performSegueWithIdentifier:@"bill" sender:self];
+    
     [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
-}
-
-#pragma mark - UIActionSheetDelegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    /*
-    //handle pulling in from actual contact record
-    if(buttonIndex == 0) {
-        ABPeoplePickerNavigationController *picker =
-        [[ABPeoplePickerNavigationController alloc] init];
-        picker.peoplePickerDelegate = self;
-        
-        [self presentViewController:picker animated:YES completion:NULL];
-    } else if (buttonIndex == 1) {
-        //manual contact
-        //create a person and contact info object and send them to the editor
-        NSNumber *num = [NSNumber numberWithInt:kABRecordInvalidID];
-        Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact"  inManagedObjectContext:self.managedObjectContext];
-        contact.uniqueid = num;
-        
-        //blank name and initials
-        ContactContactInfo *cinfo = [NSEntityDescription insertNewObjectForEntityForName:@"ContactContactInfo" inManagedObjectContext:self.managedObjectContext];
-        contact.contactinfo = cinfo;
-        
-        //ok now take them to the editor view
-        self.editContact = contact;
-        [self performSegueWithIdentifier:@"edit contact" sender:self];
-    }
-     */
 }
 
 #pragma mark - Fetched Controller Delegate
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    // The fetch controller is about to start sending change notifications, so prepare the table view for updates.
     [self.tableView beginUpdates];
 }
-
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
     
@@ -347,26 +248,7 @@
 
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    // The fetch controller has sent all current change notifications, so tell the table view to process all updates.
     [self.tableView endUpdates];
-}
-
-#pragma mark - Utility Functions
-- (BillUser *)makeUserSelfwithDefaults:(NSUserDefaults *)defaults
-{
-    if(!defaults)
-        defaults = [NSUserDefaults standardUserDefaults];
-    
-    NSData *defaultUser = [defaults objectForKey:@"default user"];
-    BillUser *user;
-    if(!defaultUser) {
-        user = [[BillUser alloc] initWithName:@"Me" andAbbreviation:@"ME"];
-    } else {
-        user = [NSKeyedUnarchiver unarchiveObjectWithData:defaultUser];
-    }
-    user.isSelf = YES;
-    
-    return user;
 }
 
 @end

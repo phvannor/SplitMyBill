@@ -10,7 +10,7 @@
 #import "BillLogic.h"
 
 @protocol BillAddDebtDelegate
-- (void) BillAddDebtDelegate:(id)Editor CloseForUser:(BillUser *)user AndSave:(bool)Save;
+- (void) BillAddDebtDelegate:(id)Editor AndSave:(bool)Save;
 @end
 
 @interface SplitMyBillDebtFromBillViewController : UIViewController

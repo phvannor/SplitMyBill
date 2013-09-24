@@ -13,9 +13,7 @@
 #import "TestFlight.h"
 
 @interface SplitMyBillItemEditorViewController () <UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIActionSheetDelegate>
-@property (weak, nonatomic) IBOutlet UISwitch *coupon;
 @property (weak, nonatomic) IBOutlet UIButton *buttonSelectAll;
-@property (weak, nonatomic) IBOutlet UIScrollView *scrollSplit;
 @property (weak, nonatomic) IBOutlet UITextField *nameEdit;
 @property (nonatomic) bool dataSaved;
 @property (nonatomic) bool drillingIn;
@@ -24,15 +22,14 @@
 - (IBAction)deleteClose:(id)sender;
 - (IBAction)accept:(id)sender;
 - (IBAction)addNewPress:(id)sender;
-
+@property (weak, nonatomic) IBOutlet UISegmentedControl *switchPurchaseCoupon;
 @end
 
 @implementation SplitMyBillItemEditorViewController
 
 @synthesize cost = _cost;
-@synthesize coupon = _coupon;
+@synthesize switchPurchaseCoupon = _switchPurchaseCoupon;
 @synthesize buttonSelectAll = _buttonSelectAll;
-@synthesize scrollSplit = _scrollSplit;
 @synthesize delegate = _delegate;
 @synthesize userList = _userList;
 @synthesize nameEdit = _nameEdit;
@@ -79,22 +76,23 @@
     self.cost.text = self.item.costDisplay;
     self.nameEdit.text = self.item.name;
     
-    if(self.scrollSplit)
-        self.scrollSplit.contentOffset = CGPointMake((self.item.split - 1) * 72, 0);    
-    
     if(self.userList.count > 1) {
         if(reload)
             [self.tableView reloadData];
+    } else {
+        self.buttonSelectAll.hidden = YES;
     }
     
-    self.dataSaved = NO;    
-    [self.coupon setOn:self.item.isDiscount];
+    self.dataSaved = NO;
+    self.switchPurchaseCoupon.selectedSegmentIndex = self.item.isDiscount ? 1 : 0;
 }
 
 - (void)saveData {
     //save data & close the form    
     self.item.cost = self.valueInCents;
     self.item.name = self.nameEdit.text;
+    self.item.isDiscount = (self.switchPurchaseCoupon.selectedSegmentIndex == 1);
+    
     self.dataSaved = YES;
 }
 
@@ -129,8 +127,8 @@
     self.cost.text = [BillLogic formatMoney:[NSDecimalNumber decimalNumberWithMantissa:self.valueInCents exponent:-2 isNegative:NO]];
 }
 
-- (IBAction)couponOn:(UISwitch *)sender {
-    self.item.isDiscount = sender.isOn;
+- (IBAction)switchPurchaseCoupon:(UISegmentedControl *)sender {
+    self.dataSaved = NO;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -165,8 +163,6 @@
     
     UIActionSheet *actions = [[UIActionSheet alloc] initWithTitle:@"Quick Names" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Drink", @"Appetizer", @"Entree", @"Dessert", @"Coupon", nil];
     [actions showInView:self.view];
-    
-    //[self performSegueWithIdentifier:@"edit name" sender:self];
 }
 
 - (void)viewDidLoad
@@ -174,23 +170,6 @@
     [super viewDidLoad];
     
     [self.navigationController setToolbarHidden:NO animated:YES];
-    
-    if(self.userList.count == 1) {
-        self.scrollSplit.frame = CGRectMake(2, 350, 316, 63);
-        
-        self.scrollSplit.contentSize = CGSizeMake(965, 63);
-         for(NSInteger i = 0; i < 10; i++) {
-             UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(72*i, 0, 72, 63)];
-             label.textAlignment = NSTextAlignmentCenter;
-             label.opaque = NO;
-             label.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0];
-             label.textColor = [UIColor whiteColor];
-             label.font = [UIFont systemFontOfSize:20];
-             label.text = [NSString stringWithFormat:@"%d", i+1];
-
-             [self.scrollSplit addSubview:label];
-        }
-    }
     
     UIButton *leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [leftBtn setFrame:CGRectMake(0, 0, 18, 18)];
@@ -211,12 +190,9 @@
 {
     [self setCost:nil];
     [self setTableView:nil];
-    [self setCoupon:nil];
     [self setButtonSelectAll:nil];
-    [self setScrollSplit:nil];
     [self setNameEdit:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -230,30 +206,41 @@
     static NSString *CellIdentifier = @"user name";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 
+    if(self.userList.count == 1) {
+        cell.textLabel.text = [NSString stringWithFormat:@"%d", indexPath.row + 2];
+        return cell;
+    }
+    
     // Configure the cell...
     BillUser *user =[self.userList objectAtIndex:indexPath.row];
     
-    UILabel *label = (UILabel *) [cell viewWithTag:2];
-    label.text = user.abbreviation;
-
-    UIImageView *check = (UIImageView *)[cell viewWithTag:1];
-    check.hidden = ![self.item.users containsObject:user];
+    cell.textLabel.text = user.abbreviation;
     
+    if([self.item.users containsObject:user]) {
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    } else {
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
+        
     return cell;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.userList.count;
+    if(self.userList.count == 1) {
+        return 9;
+    } else {
+        return self.userList.count;
+    }
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 20)];
-    label.text = @" Shared";
-    label.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0f];
-    
-    return label;
+    if(self.userList.count == 1) {
+        return @"Split In";
+    } else {
+        return @"Shared";
+    }
 }
 
 #pragma mark UITableViewDelegate
@@ -262,16 +249,34 @@
     //add user to list
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     
-    UIImageView *check = (UIImageView *)[cell viewWithTag:1];
-    BillUser *user = [self.userList objectAtIndex:indexPath.row];
-    if([self.item.users containsObject:user]) {
-        check.hidden = YES;
-        [self.item removeUser:user];
+    // Single user mode vs multiple
+    if(self.userList.count == 1) {
+        NSInteger currentSplit = self.item.split - 2;
+        
+        if(indexPath.row == currentSplit) {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            self.item.split = 1;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            self.item.split = indexPath.row + 2;
+            
+            if(currentSplit >= 0) {
+                UITableViewCell *oldCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:currentSplit inSection:indexPath.section]];
+                oldCell.accessoryType = UITableViewCellAccessoryNone;
+            }
+        }
     } else {
-        check.hidden = NO;
-        [self.item addUser:user];
-    }
+        BillUser *user = [self.userList objectAtIndex:indexPath.row];
     
+        if([self.item.users containsObject:user]) {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            [self.item removeUser:user];
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            [self.item addUser:user];
+        }
+    }
+
     [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
@@ -301,27 +306,4 @@
     self.dataSaved = NO;
 }
 
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    if(!decelerate && self.item) {
-        CGPoint offset = scrollView.contentOffset;
-        NSUInteger step = (offset.x + 36) / 72;
-        self.item.split = step + 1;        
-        offset.x = step * 72;   
-        [self.scrollSplit setContentOffset:offset animated:YES];
-        //self.scrollSplit.contentOffset = offset;        
-    }
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    if(self.item) {
-        CGPoint offset = scrollView.contentOffset;
-        NSUInteger step = (offset.x + 36) / 72;
-        self.item.split = step + 1;    
-        offset.x = step * 72;   
-        [self.scrollSplit setContentOffset:offset animated:YES];
-        //self.scrollSplit.contentOffset = offset;    
-    }
-}
 @end

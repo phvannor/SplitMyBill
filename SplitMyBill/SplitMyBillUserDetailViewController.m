@@ -180,7 +180,6 @@
     }
     
     self.editUser = nil;
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void) ContactEditorDelete:(id)Editor {

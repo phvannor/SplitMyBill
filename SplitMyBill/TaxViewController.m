@@ -13,7 +13,6 @@
 @property (nonatomic) bool userIsEnteringNumber;
 @property (nonatomic) bool inDollars;
 @property (weak, nonatomic) IBOutlet UIButton *buttonDecimal;
-@property (weak, nonatomic) IBOutlet UIButton *buttonZero;
 @property (weak, nonatomic) IBOutlet UIButton *buttonDelete;
 @property (nonatomic, strong) NSNumberFormatter *formatter;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *switchDollarPercent;
@@ -22,7 +21,6 @@
 @implementation TaxViewController
 @synthesize userIsEnteringNumber = _userIsEnteringNumber;
 @synthesize buttonDecimal = _buttonDecimal;
-@synthesize buttonZero = _buttonZero;
 @synthesize buttonDelete = _buttonDelete;
 @synthesize display = _display;
 @synthesize dataSource = _dataSource;
@@ -195,8 +193,6 @@
 {  
     [self setFormatter:nil];
     [self setDisplay:nil];
-    [self setButtonDecimal:nil];
-    [self setButtonZero:nil];
     [self setButtonDelete:nil];
     [super viewDidUnload];
 }

@@ -16,8 +16,6 @@
 @property (nonatomic, copy) NSString *orginalValue;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-- (IBAction)buttonCancel:(id)sender;
-- (IBAction)buttonSave:(id)sender;
 - (IBAction)buttonDelete:(id)sender;
 @end
 
@@ -28,18 +26,9 @@
 @synthesize orginalValue = _orginalValue;
 @synthesize abook = _abook;
 
-- (void)closeForm:(bool)Save {
-    [self.view endEditing:YES];
-    //validation of our data here...
-    
-    [self.delegate ContactEditor:self Close:Save];
-}
-
-- (IBAction)buttonCancel:(id)sender {
-    [self closeForm:NO];
-}
-- (IBAction)buttonSave:(id)sender {
-    [self closeForm:YES];
+- (void) viewWillDisappear:(BOOL)animated
+{
+    [self.delegate ContactEditor:self Close:YES];
 }
 
 - (IBAction)buttonDelete:(id)sender {
@@ -95,7 +84,7 @@
     if(self.user.isSelf)
         return 3;
     
-    return 3; //4 for delete
+    return 4; //4 for delete
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -171,6 +160,7 @@
     NSString *label;
     CFStringRef rawLabel = nil;
     NSString *comparisonValue;
+
     
     ABMultiValueRef values;
     if(self.contact.contactinfo) {
@@ -291,6 +281,8 @@
         cell = [self tableView:tableView getCellType:0 forRowAtIndexPath:indexPath];
     } else if(indexPath.section == 2) {
         cell = [self tableView:tableView getCellType:1 forRowAtIndexPath:indexPath];
+    } else if(indexPath.section == 3) {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"delete cell"];
     }
 
     return cell;
