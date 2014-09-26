@@ -13,7 +13,9 @@
 		A2543C5B17B6170A00425A11 /* SMBBillWhoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2543C5A17B6170A00425A11 /* SMBBillWhoViewController.m */; };
 		A2543C5E17B61EE100425A11 /* SMBBillItems.m in Sources */ = {isa = PBXBuildFile; fileRef = A2543C5D17B61EE100425A11 /* SMBBillItems.m */; };
 		A2543C6117B72F5600425A11 /* SMBBillTotalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2543C6017B72F5600425A11 /* SMBBillTotalViewController.m */; };
-		A2543C6D17B75A2B00425A11 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A2543C6917B759FC00425A11 /* libTestFlight.a */; };
+		A26C442419AAB10200CED197 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A26C441E19AAB10200CED197 /* libTestFlight.a */; };
+		A26C442519AAB10200CED197 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = A26C441F19AAB10200CED197 /* README.md */; };
+		A26C442619AAB10200CED197 /* release_notes.md in Sources */ = {isa = PBXBuildFile; fileRef = A26C442019AAB10200CED197 /* release_notes.md */; };
 		A285DB9317EE5AF6005923B5 /* SMBBillNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A285DB9217EE5AF6005923B5 /* SMBBillNavigationViewController.m */; };
 		A2BDF0A117C0C30300A14FB3 /* undo.png in Resources */ = {isa = PBXBuildFile; fileRef = A2FAB33417C073020045A9E3 /* undo.png */; };
 		A2BDF0A217C0C30300A14FB3 /* undo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A2FAB33517C073020045A9E3 /* undo@2x.png */; };
@@ -113,10 +115,12 @@
 		A2543C5D17B61EE100425A11 /* SMBBillItems.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBBillItems.m; sourceTree = "<group>"; };
 		A2543C5F17B72F5600425A11 /* SMBBillTotalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMBBillTotalViewController.h; sourceTree = "<group>"; };
 		A2543C6017B72F5600425A11 /* SMBBillTotalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBBillTotalViewController.m; sourceTree = "<group>"; };
-		A2543C6917B759FC00425A11 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
-		A2543C6A17B759FC00425A11 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		A2543C6B17B759FC00425A11 /* release_notes.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
-		A2543C6C17B759FC00425A11 /* TestFlight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		A26C441E19AAB10200CED197 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		A26C441F19AAB10200CED197 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A26C442019AAB10200CED197 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = release_notes.md; sourceTree = "<group>"; };
+		A26C442119AAB10200CED197 /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
+		A26C442219AAB10200CED197 /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
+		A26C442319AAB10200CED197 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		A285DB9117EE5AF6005923B5 /* SMBBillNavigationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMBBillNavigationViewController.h; sourceTree = "<group>"; };
 		A285DB9217EE5AF6005923B5 /* SMBBillNavigationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBBillNavigationViewController.m; sourceTree = "<group>"; };
 		A2FAB33417C073020045A9E3 /* undo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = undo.png; sourceTree = "<group>"; };
@@ -242,7 +246,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A2543C6D17B75A2B00425A11 /* libTestFlight.a in Frameworks */,
+				A26C442419AAB10200CED197 /* libTestFlight.a in Frameworks */,
 				A3E414A016E69F1C00087EB4 /* MobileCoreServices.framework in Frameworks */,
 				A3BB84C1167145E800D33330 /* Security.framework in Frameworks */,
 				A3BB84BF167145A900D33330 /* libxml2.dylib in Frameworks */,
@@ -263,17 +267,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A2543C6817B759FC00425A11 /* TestFlight */ = {
-			isa = PBXGroup;
-			children = (
-				A2543C6917B759FC00425A11 /* libTestFlight.a */,
-				A2543C6A17B759FC00425A11 /* README.md */,
-				A2543C6B17B759FC00425A11 /* release_notes.md */,
-				A2543C6C17B759FC00425A11 /* TestFlight.h */,
-			);
-			path = TestFlight;
-			sourceTree = "<group>";
-		};
 		A258738617C1CB1D002FD7B4 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -283,6 +276,19 @@
 				A307C4BD15893A120068819D /* SplitMyBillRoundingSettingsViewController.m */,
 			);
 			name = Settings;
+			sourceTree = "<group>";
+		};
+		A26C441D19AAB10200CED197 /* TestFlightSDK3.0.2 */ = {
+			isa = PBXGroup;
+			children = (
+				A26C441E19AAB10200CED197 /* libTestFlight.a */,
+				A26C441F19AAB10200CED197 /* README.md */,
+				A26C442019AAB10200CED197 /* release_notes.md */,
+				A26C442119AAB10200CED197 /* TestFlight+AsyncLogging.h */,
+				A26C442219AAB10200CED197 /* TestFlight+ManualSessions.h */,
+				A26C442319AAB10200CED197 /* TestFlight.h */,
+			);
+			path = TestFlightSDK3.0.2;
 			sourceTree = "<group>";
 		};
 		A30EEB2A1551C6E9007077A0 = {
@@ -448,7 +454,7 @@
 		A38F02FD16277B5D0075279F /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				A2543C6817B759FC00425A11 /* TestFlight */,
+				A26C441D19AAB10200CED197 /* TestFlightSDK3.0.2 */,
 				A3BB84BE167145A900D33330 /* libxml2.dylib */,
 				A324448215E5C63B00AB3E6A /* libSystem.dylib */,
 				A324448015E5C37C00AB3E6A /* libz.dylib */,
@@ -532,7 +538,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = SplitMyBill;
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 				TargetAttributes = {
 					A30EEB341551C6EA007077A0 = {
 						DevelopmentTeam = VYK92D7H94;
@@ -615,6 +621,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A26C442619AAB10200CED197 /* release_notes.md in Sources */,
 				A30EEB461551C6EA007077A0 /* main.m in Sources */,
 				A30EEB4A1551C6EA007077A0 /* SplitMyBillAppDelegate.m in Sources */,
 				A30EEB6315522B46007077A0 /* BillLogic.m in Sources */,
@@ -632,6 +639,7 @@
 				A32402E0160A60EF0075797B /* SplitMyBillContactList.m in Sources */,
 				A32402E4160A625B0075797B /* SplitMyBill.xcdatamodeld in Sources */,
 				A32402EF160A7D9C0075797B /* SplitMyBillMainScreenViewController.m in Sources */,
+				A26C442519AAB10200CED197 /* README.md in Sources */,
 				A23941A217F17983001AD7E4 /* SMBMainTabController.m in Sources */,
 				A32C5346160AA29600BF547D /* ContactContactInfo.m in Sources */,
 				A3CF31A4160AD96000CC80E1 /* SplitMyBillContactEditorViewController.m in Sources */,
@@ -696,12 +704,13 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -723,12 +732,13 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "EA114496-835B-4181-935F-36F4C7965145";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -753,6 +763,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/phillipvannortwick/GitHub/SplitMyBill/Libraries/TestFlight,
+					"$(PROJECT_DIR)/Libraries/TestFlight",
+					"$(PROJECT_DIR)/Libraries/TestFlightSDK3.0.2",
 				);
 				PRODUCT_NAME = splitmybill;
 				PROVISIONING_PROFILE = "";
@@ -778,6 +790,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/phillipvannortwick/GitHub/SplitMyBill/Libraries/TestFlight,
+					"$(PROJECT_DIR)/Libraries/TestFlight",
+					"$(PROJECT_DIR)/Libraries/TestFlightSDK3.0.2",
 				);
 				PRODUCT_NAME = splitmybill;
 				PROVISIONING_PROFILE = "";
@@ -802,12 +816,13 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "EA114496-835B-4181-935F-36F4C7965145";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EA114496-835B-4181-935F-36F4C7965145";
@@ -832,6 +847,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/phillipvannortwick/GitHub/SplitMyBill/Libraries/TestFlight,
+					"$(PROJECT_DIR)/Libraries/TestFlight",
+					"$(PROJECT_DIR)/Libraries/TestFlightSDK3.0.2",
 				);
 				PRODUCT_NAME = splitmybill;
 				PROVISIONING_PROFILE = "EA114496-835B-4181-935F-36F4C7965145";

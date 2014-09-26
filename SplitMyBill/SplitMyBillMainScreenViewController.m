@@ -153,14 +153,13 @@
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"created" ascending:NO];
     
     [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sort]];
-    [fetchRequest setFetchLimit:5];
+    [fetchRequest setFetchLimit:2];
     [fetchRequest setEntity:entity];
     
     NSError *error;
     self.billList = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
     
-    self.loadedData = 0;
-    self.loadingGrid = NO;
+    self.loadedData++;
     [self.grid reloadData];
 }
 
@@ -208,8 +207,7 @@
     */
     
     //refresh grid now
-    self.loadedData = 1; /* Debts */
-    self.loadingGrid = NO;
+    self.loadedData++;
     [self.grid reloadData];
 }
 
@@ -221,7 +219,8 @@
     //[self.navigationController.navigationBar setBackgroundColor:[UIColor whiteColor]];
     
     // Reload the correct data
-    //[self loadBillsIntoGrid];
+    self.loadedData = 0;
+    [self loadBillsIntoGrid];
     [self loadDebtsIntoGrid];
 }
 
@@ -263,15 +262,21 @@
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     // Over protective grid loading logic
-    if(self.loadingGrid) {
+    if (self.loadedData != 2) {
         return 1;
     }
     
-    if(section == 1) {
-        return self.billList.count;
+    if (section == 0) {
+        if (self.billList.count > 0) {
+            return self.billList.count;
+        }
     } else {
-        return self.debtList.count;
+        if (self.debtList.count > 0) {
+            return self.debtList.count;
+        }
     }
+    
+    return 0;
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -285,31 +290,43 @@
     
     if([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         section = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
-        
+    }
+    
+    UILabel *header = (UILabel *)[section viewWithTag:1];
+    UIButton *button = (UIButton *)[section viewWithTag:2];
+    
+    [button removeTarget:nil action:NULL forControlEvents:UIControlEventAllEvents];
+    
+    if(indexPath.section == 0) {
+        header.text = @"Recent Bills";
+        [button addTarget:self action:@selector(viewBills) forControlEvents:UIControlEventTouchDown];
     } else {
-        section = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"footer" forIndexPath:indexPath];
-        
+        header.text = @"Top Debts";
+        [button addTarget:self action:@selector(viewDebts) forControlEvents:UIControlEventTouchDown];
     }
     
     return section;
+}
+
+- (void) viewDebts
+{
+    [self performSegueWithIdentifier:@"contacts" sender:self];
+}
+
+- (void) viewBills
+{
+    [self performSegueWithIdentifier:@"bills" sender:self];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell;
     
-    if(self.loadingGrid) {
+    if(self.loadedData != 2) {
         cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"loadcell" forIndexPath:indexPath];
-    }
-    
-    // Bills
-    if (indexPath.section == 1) {
-        if(indexPath.row == self.billList.count) {
-            if(self.billList.count > 0) {
-                cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"viewall" forIndexPath:indexPath];
-            } else {
-                cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"nobills" forIndexPath:indexPath];
-            }
+    } else if (indexPath.section == 0) {
+        if(self.billList.count == 0) {
+            cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"nodata" forIndexPath:indexPath];
         } else {
             cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"billcell" forIndexPath:indexPath];
             
@@ -332,7 +349,6 @@
             date.text = [dateFormatter stringFromDate:bill.created];
         }
     } else {
-    
         if(indexPath.row == self.debtList.count) {
             if(self.debtList.count > 0) {
                 cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"viewall" forIndexPath:indexPath];
@@ -343,50 +359,58 @@
             // Show the debt details instead
             cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"debtcell" forIndexPath:indexPath];
         
-        Contact *contact = [self.debtList objectAtIndex:indexPath.row];
+            Contact *contact = [self.debtList objectAtIndex:indexPath.row];
         
-        // Show image of user...
-        UIImageView *imageView = (UIImageView *)[cell viewWithTag:1];
-        imageView.hidden = YES;
-        ABRecordID contactID = (ABRecordID)[contact.uniqueid integerValue];
-        if(contactID != kABRecordInvalidID) {
-            CFErrorRef err;
-            ABAddressBookRef ab = ABAddressBookCreateWithOptions(NULL, &err);
+            // Show image of user...
+            UIImageView *imageView = (UIImageView *)[cell viewWithTag:1];
+            imageView.hidden = YES;
+            ABRecordID contactID = (ABRecordID)[contact.uniqueid integerValue];
+            if(contactID != kABRecordInvalidID) {
+                CFErrorRef err;
+                ABAddressBookRef ab = ABAddressBookCreateWithOptions(NULL, &err);
             
-            ABRecordRef record = ABAddressBookGetPersonWithRecordID(ab, contactID);
-            if(record) {
-                if(ABPersonHasImageData(record)) {
-                    NSData *imageData = (NSData *)CFBridgingRelease(ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail));
+                ABRecordRef record = ABAddressBookGetPersonWithRecordID(ab, contactID);
+                if(record) {
+                    if(ABPersonHasImageData(record)) {
+                        NSData *imageData = (NSData *)CFBridgingRelease(ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail));
                     
-                    imageView.image = [[UIImage alloc] initWithData:imageData];
-                    [imageView.layer setCornerRadius:25.0f];
-                    imageView.clipsToBounds = YES;
-                    
-                    imageView.hidden = NO;
+                        imageView.image = [[UIImage alloc] initWithData:imageData];
+                        imageView.clipsToBounds = YES;
+                        imageView.hidden = NO;
+                    }
                 }
             }
-        }
         
-        UILabel *name = (UILabel *)[cell viewWithTag:4];
-        name.text = contact.name;
+            UILabel *name = (UILabel *)[cell viewWithTag:4];
+            name.text = [@" " stringByAppendingString:contact.name];
         
-        UILabel *initials = (UILabel *)[cell viewWithTag:3];
-        initials.hidden = !imageView.hidden;
-        if(imageView.hidden) {
-            initials.text = contact.initials;
-            [initials.layer setCornerRadius:25.0f];
-        }
+            UILabel *initials = (UILabel *)[cell viewWithTag:3];
+            initials.hidden = !imageView.hidden;
         
-        // Show debt...
-        UILabel *debtValue = (UILabel *)[cell viewWithTag:2];
+            if(imageView.hidden) {
+                initials.text = contact.initials;
+                //randomly assign a color                
+                [initials setBackgroundColor:[UIColor
+                        colorWithRed:(arc4random() % 150) / 255.0
+                        green:arc4random() % 150 / 255.0
+                        blue:arc4random() % 150 / 255.0
+                                              alpha:1.0f]];
+            }
         
-        NSInteger money = [contact.owes integerValue];
-        if(money < 0) {
-            debtValue.textColor = [UIColor redColor];
-        } else {
-            debtValue.textColor = [UIColor blackColor];
-        }
-        debtValue.text = [BillLogic formatMoneyWithInt:money];
+            // Show debt...
+            UILabel *debtValue = (UILabel *)[cell viewWithTag:2];
+            UILabel *owesLabel = (UILabel *)[cell viewWithTag:5];
+            
+            NSInteger money = [contact.owes integerValue];
+            if(money < 0) {
+                debtValue.textColor = [UIColor redColor];
+                owesLabel.text = @"You owe:";
+            } else {
+                debtValue.textColor = [UIColor whiteColor];
+                owesLabel.text = @"Owes you:";
+            }
+            
+            debtValue.text = [[BillLogic formatMoneyWithInt:money] stringByAppendingString:@" "];
         }
     }
     
@@ -395,36 +419,28 @@
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(self.loadingGrid) {
-        return CGSizeMake(collectionView.frame.size.width - 10, 80);
+    if(self.loadedData != 2) {
+        return CGSizeMake(collectionView.frame.size.width - 10, collectionView.frame.size.height - 10);
     }
+
+    float width = collectionView.frame.size.width / 2 - 2;
     
-    if(indexPath.section == 1) {
-        if(self.billList.count == 0)
-            return CGSizeMake(collectionView.frame.size.width - 10, 80);
-        
-        return CGSizeMake(100, 60);
+    if(indexPath.section == 0) {
+        return CGSizeMake(width, 80.0f);
+    } else {
+        float height = (collectionView.frame.size.height - 71 - 80) / 2 - 2;
+        return CGSizeMake(width, height);
     }
-    
-    if(self.debtList.count == 0)
-        return CGSizeMake(collectionView.frame.size.width - 10, 80);
-    
-    return CGSizeMake(320, 150);
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(self.loadingGrid) {
+    if(self.loadedData != 2) {
         return;
     }
     
-    if(indexPath.section == 1) {
+    if(indexPath.section == 0) {
         if(self.billList.count == 0) {
-            return;
-        }
-        
-        if(self.billList.count == indexPath.row) {
-            [self performSegueWithIdentifier:@"bills" sender:self];
             return;
         }
         
@@ -435,12 +451,8 @@
         if(self.debtList.count == 0)
             return;
     
-        if(indexPath.row != self.debtList.count) {
-            self.selectedContact = [self.debtList objectAtIndex:indexPath.row];
-            [self performSegueWithIdentifier:@"user debt" sender:self];
-        } else {
-            [self performSegueWithIdentifier:@"contacts" sender:self];
-        }
+        self.selectedContact = [self.debtList objectAtIndex:indexPath.row];
+        [self performSegueWithIdentifier:@"user debt" sender:self];
     }
 }
 

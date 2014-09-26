@@ -39,7 +39,7 @@
 
 - (IBAction)sendFeedback:(id)sender
 {
-    [TestFlight openFeedbackView];
+    
 }
 
 - (bool) getDiscountsPreTax

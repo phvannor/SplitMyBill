@@ -2,35 +2,37 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>867542E1-3F1D-45DC-AAAF-F8A999DC47F8</string>
 	<key>IDESourceControlProjectName</key>
 	<string>SplitMyBill</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>11DF76FF-6A7D-42E0-82A0-719E86885F06</key>
+		<key>3C48F5A05BEEA988033229B12B81331512A47488</key>
 		<string>https://github.com/phvannor/SplitMyBill.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>SplitMyBill.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>11DF76FF-6A7D-42E0-82A0-719E86885F06</key>
+		<key>3C48F5A05BEEA988033229B12B81331512A47488</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/phvannor/SplitMyBill.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>11DF76FF-6A7D-42E0-82A0-719E86885F06</string>
+	<string>3C48F5A05BEEA988033229B12B81331512A47488</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>11DF76FF-6A7D-42E0-82A0-719E86885F06</string>
+			<string>3C48F5A05BEEA988033229B12B81331512A47488</string>
 			<key>IDESourceControlWCCName</key>
 			<string>SplitMyBill</string>
 		</dict>

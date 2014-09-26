@@ -103,7 +103,6 @@
         [alert show];
         [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
 	}
-    
     self.tableView.layer.borderColor = [UIColor colorWithWhite:0.6f alpha:1.0f].CGColor;
     self.tableView.layer.borderWidth = 1.0f;
     self.title = @"Bills";
