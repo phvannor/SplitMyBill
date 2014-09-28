@@ -49,7 +49,7 @@
 - (IBAction)pressSwitch:(id)sender {
     //flip value around...
     NSInteger myVal = [self.debt.amount integerValue];
-    self.debt.amount = [NSNumber numberWithInt:(myVal*-1)];
+    self.debt.amount = [NSNumber numberWithInteger:(myVal*-1)];
 }
 
 - (void)viewDidLoad
@@ -134,7 +134,7 @@
             myValue *= -1;
         }
         //save the amount back to the server
-        self.debt.amount = [NSNumber numberWithInt:myValue];
+        self.debt.amount = [NSNumber numberWithInteger:myValue];
     } else {
         self.debt.note = textField.text;
     }

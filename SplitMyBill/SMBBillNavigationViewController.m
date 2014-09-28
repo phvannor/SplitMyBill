@@ -91,8 +91,10 @@
 {
     if([segue.identifier isEqualToString:@"add debts"])
     {
-        [segue.destinationViewController setBilllogic:self.billlogic];
-        [segue.destinationViewController setDelegate:self];
+        SplitMyBillDebtFromBillViewController *vc = segue.destinationViewController;
+        
+        vc.billlogic = self.billlogic;
+        vc.delegate = self;
     }
 }
 
@@ -176,7 +178,7 @@
         for(BillLogicItem *item in [self.billlogic itemsForUser:user])
         {
             count++;
-            message = [message stringByAppendingFormat:@"   %d.%@ %@\n",count,item.name, [item costDisplayForUser:user]];
+            message = [message stringByAppendingFormat:@"   %lu.%@ %@\n", (unsigned long)count,item.name, [item costDisplayForUser:user]];
         }
         message = [message stringByAppendingFormat:@"   owes: %@ + %@ = %@\n",[BillLogic formatMoney:[self.billlogic subtotalForUser:user]],  [BillLogic formatMoney:[self.billlogic tipForUser:user]],  [BillLogic formatMoney:[self.billlogic totalForUser:user]]];
     }
@@ -266,10 +268,10 @@
             debt.note = debtScreen.notes;
             NSDecimalNumber *amount = [debtScreen.debtAmounts objectAtIndex:i];
             amount = [amount decimalNumberByMultiplyingByPowerOf10:2];
-            debt.amount = [NSNumber numberWithInt:[amount integerValue]];
+            debt.amount = [NSNumber numberWithInteger:[amount integerValue]];
             
             //add amount to the corresponding contact
-            user.contact.owes = [NSNumber numberWithInt:([user.contact.owes integerValue] + [amount integerValue])];
+            user.contact.owes = [NSNumber numberWithInteger:([user.contact.owes integerValue] + [amount integerValue])];
         }
         
         NSError *error;

@@ -4,7 +4,6 @@
 //
 //  Created by Phillip Van Nortwick on 8/9/13.
 //
-//
 
 #import "SMBBillWhoViewController.h"
 #import "SMBBillNavigationViewController.h"
@@ -78,18 +77,22 @@
     }
     
     self.genericCount = self.logic.numberOfGenericUsers + 1;
-    self.partySize.text = [NSString stringWithFormat:@"%d", self.logic.userCount];
+    self.partySize.text = [NSString stringWithFormat:@"%lu", (unsigned long)self.logic.userCount];
     
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if([segue.identifier isEqualToString:@"edit user"]) {
         if(self.editContact) {
-            [segue.destinationViewController setContact:self.editContact];
-            [segue.destinationViewController setDelegate: self];
+            SplitMyBillContactEditorViewController *vc = (SplitMyBillContactEditorViewController *) segue.destinationViewController;
+            
+            vc.contact = self.editContact;
+            vc.delegate = self;
         } else {
-            [(SplitMyBillContactEditorViewController *)segue.destinationViewController setUser:self.editUser];
-            [segue.destinationViewController setDelegate: self];
+            SplitMyBillContactEditorViewController *vc =
+            (SplitMyBillContactEditorViewController *)segue.destinationViewController;
+            vc.user = self.editUser;
+            vc.delegate = self;
         }
     }
 }
@@ -97,7 +100,6 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - PartySelectionDataSource
@@ -319,7 +321,7 @@
     
     NSUInteger userCnt = self.logic.userCount;
     if(self.partySize) {
-        self.partySize.text = [NSString stringWithFormat:@"%d", userCnt];
+        self.partySize.text = [NSString stringWithFormat:@"%lu", (unsigned long)userCnt];
     }
     
     self.buttonContact.enabled = userCnt < 30;
@@ -373,18 +375,12 @@
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id )sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type
 {
-    
     sectionIndex = SECTION_CONTACTS;
     
-    switch(type) {
-            
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
+    if (type == NSFetchedResultsChangeInsert) {
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+    } else if (type == NSFetchedResultsChangeDelete) {
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -404,11 +400,11 @@
         return;
     }
     
-    BillUser *user = [[BillUser alloc] initWithName:[NSString stringWithFormat:@"Person %d", self.genericCount] andAbbreviation:[NSString stringWithFormat:@"#%d",self.genericCount]];
+    BillUser *user = [[BillUser alloc] initWithName:[NSString stringWithFormat:@"Person %ld", (long)self.genericCount] andAbbreviation:[NSString stringWithFormat:@"#%ld",(long)self.genericCount]];
     self.genericCount++;
     
     [self.logic addUser:user];
-    self.partySize.text = [NSString stringWithFormat:@"%d", self.logic.userCount];
+    self.partySize.text = [NSString stringWithFormat:@"%lu", (unsigned long)self.logic.userCount];
     
     if(self.logic.userCount >= 30) {
         self.buttonContact.enabled = NO;
@@ -464,47 +460,48 @@
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
-- (BOOL)peoplePickerNavigationController:
-(ABPeoplePickerNavigationController *)peoplePicker
-      shouldContinueAfterSelectingPerson:(ABRecordRef)person
-{
+-(void)addPersonToBill:(ABRecordRef)person {
     ABRecordID uniqueID = ABRecordGetRecordID(person);
     NSNumber *myNum = [NSNumber numberWithInteger:uniqueID];
-    [self dismissViewControllerAnimated:YES completion:NULL];
     
-    //make sure contact isn't already present, if it is put up an error
-    NSFetchRequest *fetch = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Contact"
-                                              inManagedObjectContext:self.managedObjectContext];
-    
-    [fetch setEntity:entity];
-    [fetch setFetchLimit:1];
-    [fetch setPredicate:[NSPredicate predicateWithFormat:@"uniqueid == %@", myNum]];
-    
-    NSError *error;
-    NSArray *contacts = [self.managedObjectContext executeFetchRequest:fetch error:&error];
-    if(contacts.count == 1) {
-        //just select the contact in the list...?
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Contact Already Added" message:@"The selected contact was added previously." delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles: nil];
-        [alert show];
-        return NO;
+    // Select the existing person if contact already present
+    // Check if they gave us access to their contacts list
+    if (uniqueID != kABRecordInvalidID) {
+        NSFetchRequest *fetch = [[NSFetchRequest alloc] init];
+        NSEntityDescription *entity = [NSEntityDescription
+                                       entityForName:@"Contact"
+                                       inManagedObjectContext:self.managedObjectContext];
+        
+        [fetch setEntity:entity];
+        [fetch setFetchLimit:1];
+        [fetch setPredicate:[NSPredicate predicateWithFormat:@"uniqueid == %@", myNum]];
+        
+        NSError *error;
+        NSArray *contacts = [self.managedObjectContext executeFetchRequest:fetch error:&error];
+        if(contacts.count == 1) {
+            return;
+        }
     }
-    
+
     //Generate the contact's name
     NSString *firstName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonFirstNameProperty);
     NSString *lastName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonLastNameProperty);
+    
     NSString *compositeName;
     NSString *abbreviation = @"";
-    if(firstName.length > 1) {
+    
+    if (firstName.length > 1) {
         abbreviation = [firstName substringToIndex:1];
         compositeName = firstName;
     }
-    if(lastName.length > 1) {
+    
+    if (lastName.length > 1) {
         abbreviation = [abbreviation stringByAppendingString:[lastName substringToIndex:1]];
-        if(compositeName)
+        if(compositeName) {
             compositeName = [compositeName stringByAppendingFormat:@" %@", lastName];
-        else
+        } else {
             compositeName = lastName;
+        }
     }
     
     if([abbreviation isEqualToString:@""]) {
@@ -531,10 +528,9 @@
         email = @"";
     }
     CFRelease(emails);
-    
-    
-    //ok now create and save our data
-    Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact"  inManagedObjectContext:self.managedObjectContext];
+
+    // Now create and save our data
+    Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
     contact.uniqueid = myNum;
     contact.name = compositeName;
     contact.initials = abbreviation;
@@ -549,21 +545,34 @@
     cinfo.phone = phone;
     contact.contactinfo = cinfo;
     
-    //save?
-    if(![self.managedObjectContext save:&error]) {
-        //show error
-        return NO;
+    if(![self.managedObjectContext save:nil]) {
+        // TODO: Handle error
+        return;
     }
     
-    //select our contact
+    // Finally, select the contact
     NSIndexPath *path = [self.contactListController indexPathForObject:contact];
     path = [NSIndexPath indexPathForRow:path.row inSection:SECTION_CONTACTS];
     [self tableView:self.tableView didSelectRowAtIndexPath:path];
     
+    // Disable adding people if at 30
     if(self.logic.userCount >= 30) {
         self.buttonContact.enabled = NO;
         self.buttonGeneric.enabled = NO;
     }
+}
+
+-(void)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker didSelectPerson:(ABRecordRef)person
+{
+    [self addPersonToBill:person];
+}
+
+- (BOOL)peoplePickerNavigationController:
+(ABPeoplePickerNavigationController *)peoplePicker
+      shouldContinueAfterSelectingPerson:(ABRecordRef)person
+{
+    [self dismissViewControllerAnimated:YES completion:NULL];
+    [self addPersonToBill:person];
     
     return NO;
 }
@@ -666,7 +675,7 @@
         }
     }
     
-    self.partySize.text = [NSString stringWithFormat:@"%d", self.logic.userCount];
+    self.partySize.text = [NSString stringWithFormat:@"%lu", (unsigned long)self.logic.userCount];
     self.editPath = nil;
     
     [self.navigationController popViewControllerAnimated:YES];

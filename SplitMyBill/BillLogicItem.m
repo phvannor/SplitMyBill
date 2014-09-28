@@ -53,7 +53,7 @@
         if(cost > 0) cost *= -1;
     }
     
-    self.item.price = [NSNumber numberWithInt:cost];
+    self.item.price = [NSNumber numberWithInteger:cost];
     self.userTotals = nil; //will need to recalculate this value
     self.hasChanged = YES;
 }
@@ -86,7 +86,7 @@
     return [self.item.split integerValue];
 }
 - (void) setSplit:(NSInteger)split {
-    self.item.split = [NSNumber numberWithInt:split];
+    self.item.split = [NSNumber numberWithInteger:split];
     self.hasChanged = YES;
 }
 

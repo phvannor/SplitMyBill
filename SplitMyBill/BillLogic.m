@@ -136,7 +136,7 @@
             break;
     }
     
-    self.bill.rounding = [NSNumber numberWithInt:keyVal];
+    self.bill.rounding = [NSNumber numberWithLong:keyVal];
     NSError *error;
     if(![self.managedContext save:&error]) {
         
@@ -358,7 +358,7 @@
         //they owe = (% owe * total (w/o discounts)) - their discounts
         NSDecimalNumber *rawValue = [[useritemtotal decimalNumberByMultiplyingBy:itemtotalAndTax] decimalNumberByAdding:userdiscounts];
         NSDecimalNumber *roundedValue = [[useritemtotal decimalNumberByMultiplyingBy:itemtotalAndTax] decimalNumberByAdding:userdiscounts withBehavior:self];
-        [roundedSubtotals addObject:[NSNumber numberWithInt:[[[rawValue decimalNumberBySubtracting:roundedValue] decimalNumberByMultiplyingByPowerOf10:4] integerValue]]];  
+        [roundedSubtotals addObject:[NSNumber numberWithInteger:[[[rawValue decimalNumberBySubtracting:roundedValue] decimalNumberByMultiplyingByPowerOf10:4] integerValue]]];
         
         //for safety, if less than zero, make value zero (we assume users must owe something and bill is incompletly entered in this case)
         if([roundedValue compare:zero] != NSOrderedDescending) {
@@ -370,7 +370,7 @@
         rawValue = [useritemtotal decimalNumberByAdding:userdiscounts];
         roundedValue = [useritemtotal decimalNumberByAdding:userdiscounts withBehavior:self];
         //contains the remainder we rounded off to get to decimal places, so if total was 2.2345, this would end up at 45 (used in distribute pennies below)
-        [roundedAmounts addObject:[NSNumber numberWithInt:[[[rawValue decimalNumberBySubtracting:roundedValue] decimalNumberByMultiplyingByPowerOf10:4] integerValue]]];
+        [roundedAmounts addObject:[NSNumber numberWithInteger:[[[rawValue decimalNumberBySubtracting:roundedValue] decimalNumberByMultiplyingByPowerOf10:4] integerValue]]];
         if([roundedValue compare:zero] != NSOrderedDescending) {
             roundedValue = zero;
         }        

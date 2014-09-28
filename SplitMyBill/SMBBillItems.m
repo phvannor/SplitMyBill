@@ -55,8 +55,7 @@
     [self.tableView reloadData];
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     
     // If we have items, we already exist so flip to step 2
@@ -312,10 +311,10 @@
             debt.note = debtScreen.notes;
             NSDecimalNumber *amount = [debtScreen.debtAmounts objectAtIndex:i];
             amount = [amount decimalNumberByMultiplyingByPowerOf10:2];
-            debt.amount = [NSNumber numberWithInt:[amount integerValue]];
+            debt.amount = [NSNumber numberWithInteger:[amount integerValue]];
             
             //add amount to the corresponding contact
-            user.contact.owes = [NSNumber numberWithInt:([user.contact.owes integerValue] + [amount integerValue])];
+            user.contact.owes = [NSNumber numberWithInteger:([user.contact.owes integerValue] + [amount integerValue])];
         }
         
         NSError *error;
@@ -408,7 +407,7 @@
         case 0:
             if(indexPath.row < self.logic.items.count) {
                 BillLogicItem *item = [self.logic.items objectAtIndex:indexPath.row];
-                cell.textLabel.text = [NSString stringWithFormat:@"%d) %@",(indexPath.row + 1),item.name];
+                cell.textLabel.text = [NSString stringWithFormat:@"%d) %@",[@(indexPath.row) intValue] + 1,item.name];
                 
                 if(self.logic.userCount == 1) {
                     cell.detailTextLabel.text = [item costDisplayForUser:user];

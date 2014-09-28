@@ -78,10 +78,13 @@
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if([segue.identifier isEqualToString:@"edit user"]) {
         self.user.isSelf = YES;
-        [segue.destinationViewController setDelegate:self];
-        [(SplitMyBillContactEditorViewController *)segue.destinationViewController setUser:self.user];
+        SplitMyBillContactEditorViewController *vc = (SplitMyBillContactEditorViewController *)segue.destinationViewController;
+        vc.delegate = self;
+        vc.user = self.user;
+        
     } else if([segue.identifier isEqualToString:@"rounding"]) {
-        [segue.destinationViewController setRoundingDataSource:self];
+        SplitMyBillRoundingSettingsViewController *vc = (SplitMyBillRoundingSettingsViewController *)segue.destinationViewController;
+        vc.roundingDataSource = self;
     } else if([segue.identifier isEqualToString:@"edit tip"]){
         [(TipViewController *)segue.destinationViewController setDataSource:self];
     } else if([segue.identifier isEqualToString:@"edit tax"]) {
@@ -214,7 +217,7 @@
                 } else if(self.roundingAmount == 5) {
                     cell.textLabel.text = @"Round Up ($0.05)";
                 } else {
-                    cell.textLabel.text = [@"Round Up (" stringByAppendingFormat:@"$0.%d)", self.roundingAmount];                    
+                    cell.textLabel.text = [@"Round Up (" stringByAppendingFormat:@"$0.%ld)", (long)self.roundingAmount];
                 }
             } else {
                 cell.textLabel.text = @"Exact";                

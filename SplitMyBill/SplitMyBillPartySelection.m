@@ -61,7 +61,7 @@
 	}
     
     self.genericCount = self.dataSource.logic.numberOfGenericUsers + 1;    
-    self.partySize.text = [NSString stringWithFormat:@"%d", self.dataSource.logic.userCount];
+    self.partySize.text = [NSString stringWithFormat:@"%lu", (unsigned long)self.dataSource.logic.userCount];
     
     return YES;
 }
@@ -271,7 +271,7 @@
     
     NSUInteger userCnt = self.dataSource.logic.userCount;
     if(self.partySize) {
-        self.partySize.text = [NSString stringWithFormat:@"%d", userCnt];
+        self.partySize.text = [NSString stringWithFormat:@"%lu", (unsigned long)userCnt];
     }
     if(self.buttonNext)
         self.buttonNext.enabled = (userCnt > 0);
@@ -330,20 +330,20 @@
 }
 
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id )sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type
+- (void)controller:(NSFetchedResultsController *)controller
+  didChangeSection:(id )sectionInfo
+           atIndex:(NSUInteger)sectionIndex
+     forChangeType:(NSFetchedResultsChangeType)type
 {
     
     sectionIndex = SECTION_CONTACTS;
     
-    switch(type) {
-            
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
+    if (type == NSFetchedResultsChangeInsert) {
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+                      withRowAnimation:UITableViewRowAnimationFade];
+    } else if (type == NSFetchedResultsChangeDelete) {
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+                      withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -363,11 +363,11 @@
         return;
     }
     
-    BillUser *user = [[BillUser alloc] initWithName:[NSString stringWithFormat:@"Person %d", self.genericCount] andAbbreviation:[NSString stringWithFormat:@"#%d",self.genericCount]];
+    BillUser *user = [[BillUser alloc] initWithName:[NSString stringWithFormat:@"Person %ld", (long)self.genericCount] andAbbreviation:[NSString stringWithFormat:@"#%ld",(long)self.genericCount]];
     self.genericCount++;
     
     [self.dataSource.logic addUser:user];
-    self.partySize.text = [NSString stringWithFormat:@"%d", self.dataSource.logic.userCount];
+    self.partySize.text = [NSString stringWithFormat:@"%lu", (unsigned long)self.dataSource.logic.userCount];
     
     if(self.dataSource.logic.userCount >= 30) {
         self.buttonContact.enabled = NO;
@@ -627,7 +627,7 @@
         }
     }
     
-    self.partySize.text = [NSString stringWithFormat:@"%d", self.dataSource.logic.userCount];
+    self.partySize.text = [NSString stringWithFormat:@"%lu", (unsigned long)self.dataSource.logic.userCount];
     
     self.editPath = nil;
     [self.delegate popController];

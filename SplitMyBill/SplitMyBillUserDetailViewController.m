@@ -43,11 +43,13 @@
     if([segue.identifier isEqualToString:@"edit user"])
     {
         //we need to be this one's delegate...
-        [segue.destinationViewController setDelegate:self];
+        SplitMyBillContactEditorViewController *vc = (SplitMyBillContactEditorViewController *)segue.destinationViewController;
+        
+        vc.delegate = self;
         if(self.user.contact) {
-            [segue.destinationViewController setContact:self.user.contact];
+            vc.contact = self.user.contact;
         } else {
-            [(SplitMyBillContactEditorViewController *)segue.destinationViewController setUser:self.editUser];
+            vc.user = self.editUser;
         }
     }
 }
@@ -123,7 +125,7 @@
     
     // Configure the cell...
     BillLogicItem *item = [[self.logic itemsForUser:self.user] objectAtIndex:indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"%d) %@", indexPath.row + 1, item.name];
+    cell.textLabel.text = [NSString stringWithFormat:@"%d) %@", [@(indexPath.row) intValue] + 1, item.name];
     cell.detailTextLabel.text = [item costDisplayForUser:self.user];
 
     return cell;

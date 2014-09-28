@@ -20,7 +20,6 @@
 @property (nonatomic) NSInteger valueInCents;
 
 - (IBAction)deleteClose:(id)sender;
-- (IBAction)accept:(id)sender;
 - (IBAction)addNewPress:(id)sender;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *switchPurchaseCoupon;
 @end
@@ -39,21 +38,9 @@
 @synthesize drillingIn = _drillingIn;
 @synthesize valueInCents = _valueInCents;
 
--(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    self.drillingIn = YES;
-    if([segue.identifier isEqualToString:@"edit name"]) {
-        [segue.destinationViewController setDelegate:self];
-        [segue.destinationViewController setName:self.item.name];
-    }
-}
-
 - (IBAction) nameChanged:(UITextField *)sender {
     self.item.name = sender.text;
     self.dataSaved = NO;
-}
-
-- (IBAction)accept:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (IBAction)selectAll:(id)sender {
@@ -207,7 +194,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 
     if(self.userList.count == 1) {
-        cell.textLabel.text = [NSString stringWithFormat:@"%d", indexPath.row + 2];
+        cell.textLabel.text = [NSString stringWithFormat:@"%d", @(indexPath.row).intValue + 2];
         return cell;
     }
     

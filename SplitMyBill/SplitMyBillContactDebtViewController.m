@@ -183,7 +183,7 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
         //update the owed amount
         NSInteger owes = [self.contact.owes integerValue];
         owes += [self.debt.amount integerValue];
-        self.contact.owes = [NSNumber numberWithInt:owes];
+        self.contact.owes = [NSNumber numberWithInteger:owes];
         
         NSError *error;
         if (![self.managedObjectContext save:&error]) {
@@ -309,7 +309,7 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
     //remove this amount, add back in when saved
     NSInteger owes = [self.contact.owes integerValue];
     owes -= [self.debt.amount integerValue];
-    self.contact.owes = [NSNumber numberWithInt:owes];
+    self.contact.owes = [NSNumber numberWithInteger:owes];
     
     [self performSegueWithIdentifier:@"edit debt" sender:self];
     
@@ -330,7 +330,7 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
         
         NSInteger owes = [self.contact.owes integerValue];
         owes -= [debt.amount integerValue];
-        self.contact.owes = [NSNumber numberWithInt:owes];
+        self.contact.owes = [NSNumber numberWithInteger:owes];
         //update what the user owes
         [self.managedObjectContext deleteObject:debt];
         
@@ -381,15 +381,10 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id )sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
     
-    switch(type) {
-            
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
+    if (type == NSFetchedResultsChangeInsert) {
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+    } else if (type == NSFetchedResultsChangeDelete) {
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -433,7 +428,7 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
     debt.created = [[NSDate alloc] init];
     debt.contact = self.contact;
     debt.note = note;
-    debt.amount = [NSNumber numberWithInt:([self.contact.owes integerValue] * -1)];
+    debt.amount = [NSNumber numberWithInteger:([self.contact.owes integerValue] * -1)];
     debt.settled = [NSNumber numberWithBool:YES];
     debt.isSettleEntry = [NSNumber numberWithBool:YES];
     

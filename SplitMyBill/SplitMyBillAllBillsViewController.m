@@ -56,17 +56,17 @@
     
     [fetchRequest setEntity:entity];
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"created" ascending:NO];
-    [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sort]];
-    [fetchRequest setFetchBatchSize:20];
+    fetchRequest.sortDescriptors = @[sort];
+    fetchRequest.fetchBatchSize = 20;
     
     [NSFetchedResultsController deleteCacheWithName:@"AllBills"];
-    NSFetchedResultsController *theFetchedResultsController =
+    NSFetchedResultsController *fetchResults =
     [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
         managedObjectContext:self.managedObjectContext
         sectionNameKeyPath:nil
         cacheName:@"AllBills" ];
     
-    self.bills = theFetchedResultsController;
+    self.bills = fetchResults;
     self.bills.delegate = self;
     
     return self.bills;
@@ -103,8 +103,7 @@
         [alert show];
         [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
 	}
-    self.tableView.layer.borderColor = [UIColor colorWithWhite:0.6f alpha:1.0f].CGColor;
-    self.tableView.layer.borderWidth = 1.0f;
+    
     self.title = @"Bills";
 }
 
@@ -178,17 +177,6 @@
      }
 }
 
-// Override to support rearranging the table view.
-/*
- - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
- {
- }
- 
- - (void) tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
- {
- }
- */
-
 #pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -230,21 +218,14 @@
     }
 }
 
-
 - (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id )sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
     
-    switch(type) {
-            
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
+    if (type == NSFetchedResultsChangeInsert) {
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+    } else if (type == NSFetchedResultsChangeDelete) {
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
-
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     [self.tableView endUpdates];

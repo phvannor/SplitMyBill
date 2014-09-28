@@ -11,7 +11,6 @@
 #import "SplitMyBillMainScreenViewController.h"
 #import "SplitMyBillContactDebtViewController.h"
 #import "TestFlight.h"
-//#import "SMBMainTabController.h"
 
 @interface SplitMyBillAppDelegate()
 
@@ -31,15 +30,16 @@
     [TestFlight takeOff:@"92e7748c-986f-4326-b355-50beaef5a779"];
     
     //give our default view the object context
-    
     UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
     SplitMyBillMainScreenViewController *controller = (SplitMyBillMainScreenViewController *)navigationController.topViewController;
     controller.managedObjectContext = self.managedObjectContext;
     
+    /*
     [[UINavigationBar appearance] setTitleTextAttributes:@{
         NSFontAttributeName: [UIFont fontWithName:@"Avenir-Light" size:20.0],
         NSForegroundColorAttributeName: [UIColor blackColor]
         }];
+    */
     
     return YES;
 }
@@ -181,41 +181,32 @@
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"SplitMyBill.sqlite"];
     
     NSError *error = nil;
-    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc]
+                                   initWithManagedObjectModel:[self managedObjectModel]];
     
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error])
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                                   configuration:nil
+                                                             URL:storeURL
+                                                         options:nil
+                                                           error:&error])
     {
-        /*
-         Replace this implementation with code to handle the error appropriately.
-         
-         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-         
-         Typical reasons for an error here include:
-         * The persistent store is not accessible;
-         * The schema for the persistent store is incompatible with current managed object model.
-         Check the error message to determine what the actual problem was.
-         
-         If the persistent store is not accessible, there is typically something wrong with the file path. Often, a file URL is pointing into the application's resources directory instead of a writeable directory.
-         
-         If you encounter schema incompatibility errors during development, you can reduce their frequency by:
-         * Simply deleting the existing store:
-         [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil]
-         
-         * Performing automatic lightweight migration by passing the following dictionary as the options parameter:*/
-        /*
-         NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                                 [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
-                                 [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption, nil];        
-        */
-        if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:@{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES} error:&error])
+        NSDictionary *options = @{
+                                  NSMigratePersistentStoresAutomaticallyOption:@YES,
+                                  NSInferMappingModelAutomaticallyOption:@YES
+                                  };
+        
+        if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                                       configuration:nil
+                                                                 URL:storeURL
+                                                             options:options
+                                                               error:&error])
         {
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
+            
+            // See what else we can do for the conversion
+            
+            
         }
-        /*
-         Lightweight migration will only work for a limited set of schema changes; consult "Core Data Model Versioning and Data Migration Programming Guide" for details.
-         
-        */
     }
     
     return _persistentStoreCoordinator;
