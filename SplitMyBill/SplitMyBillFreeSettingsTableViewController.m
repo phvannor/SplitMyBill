@@ -93,6 +93,8 @@
 }
 
 - (void) viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
     if(self.user.isDirty) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:[NSKeyedArchiver archivedDataWithRootObject:self.user] forKey:@"default user"];    

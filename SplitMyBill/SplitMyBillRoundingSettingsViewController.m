@@ -20,6 +20,8 @@
 
 - (void) viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
+    
     [self.roundingDataSource setRoundingAmount:self.amount];
 }
 

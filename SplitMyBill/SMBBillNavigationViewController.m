@@ -40,6 +40,7 @@
             [self.managedObjectContext save:nil];
         }
     }
+    [super viewWillDisappear:animated];
 }
 
 -(void)viewDidLoad

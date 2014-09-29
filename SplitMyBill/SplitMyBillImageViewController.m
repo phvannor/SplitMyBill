@@ -71,8 +71,8 @@
     [picker dismissViewControllerAnimated:YES completion:nil];
     
     //store the file
-    UIImage *originalImage; //, *editedImage, *imageToSave;
-    originalImage = (UIImage *) [info objectForKey:UIImagePickerControllerOriginalImage];
+    // UIImage *originalImage; //, *editedImage, *imageToSave;
+    // originalImage = (UIImage *) [info objectForKey:UIImagePickerControllerOriginalImage];
     
     // Save the new image (original or edited) to the Camera Roll
     //UIImageWriteToSavedPhotosAlbum (imageToSave, nil, nil , nil);

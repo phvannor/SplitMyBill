@@ -28,6 +28,8 @@
 
 - (void) viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
+    
     if(self.inDollars) {
         NSString *temp = [self.display.text stringByReplacingOccurrencesOfString:@"$" withString:@""];
         temp = [temp stringByReplacingOccurrencesOfString:@"," withString:@""];

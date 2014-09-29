@@ -12,7 +12,6 @@
 
 @interface SplitMyBillContactEditorViewController ()  <UITextFieldDelegate, UIActionSheetDelegate>
 
-@property (nonatomic) ABAddressBookRef abook;
 @property (nonatomic) ABRecordRef abContact;
 @property (nonatomic, copy) NSString *orginalValue;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -24,6 +23,8 @@
 
 - (void) viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
+    
     [self.delegate ContactEditor:self Close:(self.contact || self.user)];
 }
 
@@ -51,19 +52,12 @@
         NSNumber *myNum = self.contact.uniqueid;
         ABRecordID myID = (ABRecordID)[myNum integerValue];
         if (myID != kABRecordInvalidID) {
-            self.abook = ABAddressBookCreateWithOptions(NULL, nil);
-            if (self.abook) {
-                ABRecordRef ref = ABAddressBookGetPersonWithRecordID(self.abook, myID);
-                self.abContact = ref;
+            ABAddressBookRef abook = ABAddressBookCreateWithOptions(NULL, nil);
+            if (abook) {
+                self.abContact = ABAddressBookGetPersonWithRecordID(abook, myID);
+                CFRelease(abook);
             }
         }
-    }
-}
-
-- (void) viewDidUnload {
-    self.tableView = nil;
-    if(!self.abook) {
-        CFRelease(self.abook);
     }
 }
 
@@ -136,9 +130,9 @@
     
     ABMultiValueRef values;
     if(usePhone) {
-        values = ABRecordCopyValue(self.abContact,                                                         kABPersonPhoneProperty);
+        values = ABRecordCopyValue(self.abContact, kABPersonPhoneProperty);
     } else {
-        values = ABRecordCopyValue(self.abContact,                                                         kABPersonEmailProperty);
+        values = ABRecordCopyValue(self.abContact, kABPersonEmailProperty);
     }
     
     bool found = NO;

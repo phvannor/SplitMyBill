@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SplitMyBill/TaxViewController.m"
-            timestampString = "400577414.74241"
+            timestampString = "433664083.353061"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
             landmarkName = "-viewWillDisappear:"
             landmarkType = "5">
          </BreakpointContent>

@@ -136,6 +136,8 @@ static NSString *const secret = @"6EgYZEH4qYm8fWT9N6yYHkBWyT5JtAe6";
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
+    
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     [self.navigationController setToolbarHidden:NO animated:NO];
 }

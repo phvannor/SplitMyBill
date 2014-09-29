@@ -39,6 +39,8 @@
 
 - (void) viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
+    
     if(self.inDollars) {
         NSDecimalNumber *temp = [NSDecimalNumber decimalNumberWithMantissa:self.rawAmountValueInCents exponent:-2 isNegative:NO];
         self.dataSource.tipAmount = temp;
