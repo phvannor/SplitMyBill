@@ -66,12 +66,12 @@
     
     self.contactListController = nil;
     NSError *error;
-    if (![[self contactListController] performFetch:&error])
+    if (![self.contactListController performFetch:&error])
     {
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
     }
     
-    if(self.logic.users.count > 1) {
+    if (self.logic.users.count > 1) {
         self.navigationItem.rightBarButtonItem = nil;
         self.navigationItem.leftBarButtonItem = nil;
     }
@@ -134,26 +134,19 @@
         return _contactListController;
     }
     
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription
-                                   entityForName:@"Contact"
-                                   inManagedObjectContext:self.managedObjectContext];
-    
-    [fetchRequest setEntity:entity];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Contact"];
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO];
-    [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sort]];
+    fetchRequest.sortDescriptors = @[sort];
+    fetchRequest.fetchBatchSize = 20;
     
-    [fetchRequest setFetchBatchSize:20];
-    
-    //[NSFetchedResultsController deleteCacheWithName:@"UserSelection"];
-    
-    NSFetchedResultsController *theFetchedResultsController =
+    [NSFetchedResultsController deleteCacheWithName:@"UserSelection"];
+    NSFetchedResultsController *fetchedResultsController =
     [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                         managedObjectContext:self.managedObjectContext
                                           sectionNameKeyPath:nil
                                                    cacheName:@"UserSelection" ];
     
-    _contactListController = theFetchedResultsController;
+    _contactListController = fetchedResultsController;
     _contactListController.delegate = self;
     
     return _contactListController;

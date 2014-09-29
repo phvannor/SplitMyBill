@@ -16,51 +16,36 @@
 #import "TestFlight.h"
 
 @interface SMBBillNavigationViewController () <UIActionSheetDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
+
 @property (nonatomic) bool settingTotalIsSimple;
 @property (nonatomic) bool settingDiscountsPreTax;
-
 @property (nonatomic) bool hasTexting;
 @property (nonatomic) bool hasEmail;
 
 @end
 
+
 @implementation SMBBillNavigationViewController
 
-@synthesize billlogic = _billlogic;
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize bill = _bill;
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+-(void)viewWillDisappear:(BOOL)animated
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void) viewWillDisappear:(BOOL)animated
-{
-    if(self.bill) {
-        //Update bill total
+    if (self.bill) {
+        // Update bill total
         self.bill.total = [NSNumber numberWithInteger:[[self.billlogic.total decimalNumberByMultiplyingByPowerOf10:2] integerValue]];
         
         // If total is 0 and bill is new, don't save
         if(self.bill.items.count == 0) {
             [self.managedObjectContext deleteObject:self.bill];
         } else {
-            NSError *error;
-            [self.managedObjectContext save:&error];
+            [self.managedObjectContext save:nil];
         }
     }
 }
 
-- (void)viewDidLoad
+-(void)viewDidLoad
 {
     [super viewDidLoad];
-    
-	// Do any additional setup after loading the view.
-    [self.navigationController setNavigationBarHidden:NO];
+    self.navigationController.navigationBarHidden = NO;
     
     //load up defaults for the bill
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -78,21 +63,15 @@
     }
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 - (void) addDebt {
     [self performSegueWithIdentifier:@"add debts" sender:self];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if([segue.identifier isEqualToString:@"add debts"])
+    if ([segue.identifier isEqualToString:@"add debts"])
     {
         SplitMyBillDebtFromBillViewController *vc = segue.destinationViewController;
-        
         vc.billlogic = self.billlogic;
         vc.delegate = self;
     }
@@ -107,11 +86,14 @@
     return self.settingDiscountsPreTax;
 }
 
-
 #pragma mark actionsheet delegate
 - (void) showBillActionsInView:(UIView *)view
 {
-    UIActionSheet *shareOptions = [[UIActionSheet alloc] initWithTitle:@"Share Bill" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+    UIActionSheet *shareOptions = [[UIActionSheet alloc] initWithTitle:@"Share Bill"
+                                                              delegate:self
+                                                     cancelButtonTitle:nil
+                                                destructiveButtonTitle:nil
+                                                     otherButtonTitles:nil];
     
     if(self.hasTexting) [shareOptions addButtonWithTitle:@"Text"];
     if(self.hasEmail) [shareOptions addButtonWithTitle:@"Email"];

@@ -14,6 +14,7 @@
 		A2543C5E17B61EE100425A11 /* SMBBillItems.m in Sources */ = {isa = PBXBuildFile; fileRef = A2543C5D17B61EE100425A11 /* SMBBillItems.m */; };
 		A2543C6117B72F5600425A11 /* SMBBillTotalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2543C6017B72F5600425A11 /* SMBBillTotalViewController.m */; };
 		A285DB9317EE5AF6005923B5 /* SMBBillNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A285DB9217EE5AF6005923B5 /* SMBBillNavigationViewController.m */; };
+		A28D847519D8F81D007B0878 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A28D847419D8F81D007B0878 /* Images.xcassets */; };
 		A2A3504419D52BDA00953604 /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A2A3504319D52BDA00953604 /* libz.1.dylib */; };
 		A2BDF0A117C0C30300A14FB3 /* undo.png in Resources */ = {isa = PBXBuildFile; fileRef = A2FAB33417C073020045A9E3 /* undo.png */; };
 		A2BDF0A217C0C30300A14FB3 /* undo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A2FAB33517C073020045A9E3 /* undo@2x.png */; };
@@ -110,6 +111,7 @@
 		A2543C6017B72F5600425A11 /* SMBBillTotalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBBillTotalViewController.m; sourceTree = "<group>"; };
 		A285DB9117EE5AF6005923B5 /* SMBBillNavigationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMBBillNavigationViewController.h; sourceTree = "<group>"; };
 		A285DB9217EE5AF6005923B5 /* SMBBillNavigationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBBillNavigationViewController.m; sourceTree = "<group>"; };
+		A28D847419D8F81D007B0878 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SplitMyBill/Images.xcassets; sourceTree = "<group>"; };
 		A2A3504319D52BDA00953604 /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = usr/lib/libz.1.dylib; sourceTree = SDKROOT; };
 		A2A3504619D52C1400953604 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		A2A3504919D52C1400953604 /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
@@ -280,6 +282,7 @@
 		A30EEB2A1551C6E9007077A0 = {
 			isa = PBXGroup;
 			children = (
+				A28D847419D8F81D007B0878 /* Images.xcassets */,
 				A38F02FD16277B5D0075279F /* Libraries */,
 				A30EEB3F1551C6EA007077A0 /* SplitTheBill */,
 				A30EEB381551C6EA007077A0 /* Frameworks */,
@@ -585,6 +588,7 @@
 				A37C1A521666F04100BB4904 /* lastbill@2x.png in Resources */,
 				A37C1A531666F04100BB4904 /* lastbill.png in Resources */,
 				A37C1A541666F04100BB4904 /* simplebill@2x.png in Resources */,
+				A28D847519D8F81D007B0878 /* Images.xcassets in Resources */,
 				A37C1A551666F04100BB4904 /* simplebill.png in Resources */,
 				A37C1A561666F04100BB4904 /* contacts@2x.png in Resources */,
 				A37C1A571666F04100BB4904 /* contacts.png in Resources */,
@@ -691,7 +695,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "c4888fc2-0765-4928-a086-20a7361c5efb";
 				SDKROOT = iphoneos;
@@ -722,7 +726,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "c4888fc2-0765-4928-a086-20a7361c5efb";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -734,6 +738,8 @@
 		A30EEB541551C6EA007077A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Phillip Van Nortwick (GC4JQM234E)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -766,6 +772,8 @@
 		A30EEB551551C6EA007077A0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -818,7 +826,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "c4888fc2-0765-4928-a086-20a7361c5efb";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -830,6 +838,8 @@
 		A3FE951D1568CAE700F3A768 /* AppStore */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (

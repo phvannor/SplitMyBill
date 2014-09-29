@@ -1,9 +1,10 @@
 //
-//  SplitMyBillContactList.m
-//  SplitMyBill
+// SplitMyBillContactList.m
+// SplitMyBill
 //
-//  Created by Phillip Van Nortwick on 9/19/12.
+// Created by Phillip Van Nortwick on 9/19/12.
 //
+// Displays a list of each contact and the total they owe/are owed
 //
 
 #import "SplitMyBillContactList.h"
@@ -15,55 +16,49 @@
 #import "BillLogic.h"
 #import <QuartzCore/QuartzCore.h>
 
-@interface SplitMyBillContactList () <UIActionSheetDelegate, ABPeoplePickerNavigationControllerDelegate, ContactEditorDelegate, NSFetchedResultsControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface SplitMyBillContactList () <ABPeoplePickerNavigationControllerDelegate, ContactEditorDelegate, NSFetchedResultsControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 
+@property (nonatomic) bool CanAccessContacts;
 @property (nonatomic, strong) NSFetchedResultsController *contactList;
 @property (nonatomic, strong) Contact *editContact;
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-- (IBAction)addContact:(id)sender;
 @end
+
 
 @implementation SplitMyBillContactList
 
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize contactList = _contactList;
-
 - (NSFetchedResultsController *)fetchedResultsController {
-    
-    if (_contactList != nil)
+    if (_contactList != nil) {
         return _contactList;
+    }
     
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription
-                                   entityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
-    
-    [fetchRequest setEntity:entity];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Contact"];
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
-    [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sort]];
-    [fetchRequest setFetchBatchSize:20];
+    fetchRequest.sortDescriptors = @[sort];
+    fetchRequest.fetchBatchSize = 20;
     
     [NSFetchedResultsController deleteCacheWithName:@"AllContacts"];
-    NSFetchedResultsController *theFetchedResultsController =
+    NSFetchedResultsController *fetchedResultsController =
     [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-        managedObjectContext:self.managedObjectContext
-        sectionNameKeyPath:nil
-        cacheName:@"AllContacts" ];
+                                        managedObjectContext:self.managedObjectContext
+                                          sectionNameKeyPath:nil
+                                                   cacheName:@"AllContacts" ];
     
-    self.contactList = theFetchedResultsController;
-    _contactList.delegate = self;
+    fetchedResultsController.delegate = self;
+
+    _contactList = fetchedResultsController;
     
     return _contactList;
-    
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if([segue.identifier isEqualToString:@"edit contact"]) {
+    if ([segue.identifier isEqualToString:@"edit contact"]) {
+        // Display contact information for one user
         SplitMyBillContactEditorViewController *controller = segue.destinationViewController;
         controller.delegate = self;
         controller.contact = self.editContact;
-        return;
-    }else if([segue.identifier isEqualToString:@"debts"]) {
+    } else if ([segue.identifier isEqualToString:@"debts"]) {
+        // Display debts about one particular user
         SplitMyBillContactDebtViewController *controller = segue.destinationViewController;
         controller.contact = self.editContact;
         controller.managedObjectContext = self.managedObjectContext;
@@ -73,14 +68,27 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     self.contactList = nil;
+    
     NSError *error;
 	if (![[self fetchedResultsController] performFetch:&error]) {
-		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Loading Contacts" message:@"An error occurred attempting to load your contacts" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles: nil];
+		NSLog(@"Error: %@, %@", error, [error userInfo]);
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Loading Contacts"
+                                                        message:@"An error occurred attempting to load your contacts"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"Cancel"
+                                              otherButtonTitles: nil];
         [alert show];
+        
         [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
 	}
+    
+    ABAddressBookRequestAccessWithCompletion(ABAddressBookCreateWithOptions(NULL, nil),
+                                             ^(bool granted, CFErrorRef error) {
+                                                 self.CanAccessContacts = granted;
+                                             });
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -90,8 +98,8 @@
 
 - (void)viewDidUnload
 {
-    [self setTableView:nil];
     [super viewDidUnload];
+    self.tableView = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -100,24 +108,23 @@
 }
 
 - (IBAction)addContact:(id)sender {
-    ABPeoplePickerNavigationController *picker =
-    [[ABPeoplePickerNavigationController alloc] init];
-    picker.peoplePickerDelegate = self;
+    ABPeoplePickerNavigationController *picker = [ABPeoplePickerNavigationController new];
     
+    picker.peoplePickerDelegate = self;
     [self presentViewController:picker animated:YES completion:NULL];
 }
 
 #pragma mark - Table view data source
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    id  sectionInfo =
-    [[self.contactList sections] objectAtIndex:section];
+    id sectionInfo = self.contactList.sections[section];
     return [sectionInfo numberOfObjects];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 48.0f;
 }
 
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
@@ -132,7 +139,7 @@
     UILabel *owes = (UILabel *)[cell viewWithTag:3];
     
     NSInteger owed = [contact.owes integerValue];
-    if(owed >= 0) {
+    if (owed >= 0) {
         owes.text = [BillLogic formatMoneyWithInt:owed];
         owes.textColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
     } else {
@@ -143,12 +150,12 @@
     UIImageView *image = (UIImageView *)[cell viewWithTag:4];
     image.hidden = YES;
     
-    //get image from contact?
+    //get image from contact
     ABRecordID contactID = (ABRecordID)[contact.uniqueid integerValue];
-    if(contactID != kABRecordInvalidID) {
+    if(contactID != kABRecordInvalidID && self.CanAccessContacts) {
         CFErrorRef *error = nil;
-        ABAddressBookRef abook = ABAddressBookCreateWithOptions(nil, error);
         
+        ABAddressBookRef abook = ABAddressBookCreateWithOptions(nil, error);
         ABRecordRef record = ABAddressBookGetPersonWithRecordID(abook, contactID);
         if(record) {
             if(ABPersonHasImageData(record)) {
@@ -201,140 +208,150 @@
     [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
-#pragma mark - UIActionSheetDelegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+#pragma mark - UIAlertViewDelegate
+
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    //handle pulling in from actual contact record
-    if(buttonIndex == 0) {
-        ABPeoplePickerNavigationController *picker =
-        [[ABPeoplePickerNavigationController alloc] init];
-        picker.peoplePickerDelegate = self;
+    if (buttonIndex == 1) {
+        // Fall back to a manual contact
+        // Create a person and contact info object and send them to the editor
+        NSNumber *customUserId = [NSNumber numberWithInt:kABRecordInvalidID];
         
-        [self presentViewController:picker animated:YES completion:NULL];
-    } else if (buttonIndex == 1) {
-        //manual contact
-        //create a person and contact info object and send them to the editor
-        NSNumber *num = [NSNumber numberWithInt:kABRecordInvalidID];
-        Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact"  inManagedObjectContext:self.managedObjectContext];
-        contact.uniqueid = num;
+        Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact"
+                                                         inManagedObjectContext:self.managedObjectContext];
+        contact.uniqueid = customUserId;
         
-        //blank name and initials
-        ContactContactInfo *cinfo = [NSEntityDescription insertNewObjectForEntityForName:@"ContactContactInfo" inManagedObjectContext:self.managedObjectContext];
+        // Blank name and initials
+        ContactContactInfo *cinfo = [NSEntityDescription insertNewObjectForEntityForName:@"ContactContactInfo"
+                                                                  inManagedObjectContext:self.managedObjectContext];
         contact.contactinfo = cinfo;
         
-        //ok now take them to the editor view
+        // Now go to the editor view
         self.editContact = contact;
+        
         [self performSegueWithIdentifier:@"edit contact" sender:self];
     }
 }
 
-#pragma mark - ABPeoplePickerDelegate
-- (void)peoplePickerNavigationControllerDidCancel:
-(ABPeoplePickerNavigationController *)peoplePicker
+#pragma mark - ABPeoplePickerNavigationControllerDelegate
+
+-(void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
 {
     [self dismissViewControllerAnimated:YES completion:NULL];
     
-    //fall back to manual contact
-    //create a person and contact info object and send them to the editor
-    NSNumber *num = [NSNumber numberWithInt:kABRecordInvalidID];
-    Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact"  inManagedObjectContext:self.managedObjectContext];
-    contact.uniqueid = num;
-    
-    //blank name and initials
-    ContactContactInfo *cinfo = [NSEntityDescription insertNewObjectForEntityForName:@"ContactContactInfo" inManagedObjectContext:self.managedObjectContext];
-    contact.contactinfo = cinfo;
-    
-    //ok now take them to the editor view
-    self.editContact = contact;
-    [self performSegueWithIdentifier:@"edit contact" sender:self];
+    UIAlertView *manualCreate = [[UIAlertView alloc] initWithTitle:@"Create New Contact"
+                                                           message:@"Would you like to add a new contact instead?"
+                                                          delegate:self
+                                                 cancelButtonTitle:@"No"
+                                                 otherButtonTitles:@"Yes", nil];
+    [manualCreate show];
 }
 
-- (BOOL)peoplePickerNavigationController:
-(ABPeoplePickerNavigationController *)peoplePicker
+-(void)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
+                        didSelectPerson:(ABRecordRef)person
+{
+    [self peoplePickerNavigationController:peoplePicker shouldContinueAfterSelectingPerson:person];
+}
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
       shouldContinueAfterSelectingPerson:(ABRecordRef)person
 {
     ABRecordID uniqueID = ABRecordGetRecordID(person);
     NSNumber *myNum = [NSNumber numberWithInteger:uniqueID];
+    
     [self dismissViewControllerAnimated:YES completion:NULL];
 
-    //make sure contact isn't already present, if it is put up an error
-    
-    //see if this contact already exists
-    NSFetchRequest *fetch = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Contact"
-                                    inManagedObjectContext:self.managedObjectContext];
-    [fetch setEntity:entity];
-    [fetch setFetchLimit:1];
-    [fetch setPredicate:[NSPredicate predicateWithFormat:@"uniqueid == %@", myNum]];
- 
-    NSError *error;
-    NSArray *contacts = [self.managedObjectContext executeFetchRequest:fetch error:&error];
-    if(contacts.count == 1) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Contact Already Added" message:@"The selected contact was added previously." delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles: nil];
-        [alert show];
-        return NO;
+    // If we have access to the actual contact list, check to see if the selected contact is already
+    // present in our contact list
+    if (self.CanAccessContacts) {
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Contact"];
+        fetchRequest.fetchLimit = 1;
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"uniqueid == %@", myNum];
+        
+        NSError *error;
+        NSArray *contacts = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        if(contacts.count == 1) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Contact Already Added"
+                                                            message:@"The selected contact was added previously."
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Cancel"
+                                                  otherButtonTitles: nil];
+            [alert show];
+            return NO;
+        }
     }
     
-    //Generate the contact's name
+    // Generate the contact's name and abbreviation string
+    
     NSString *firstName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonFirstNameProperty);
     NSString *lastName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonLastNameProperty);
-    NSString *compositeName;
+    NSString *compositeName = @"";
     NSString *abbreviation = @"";
+    
     if(firstName.length > 1) {
         abbreviation = [firstName substringToIndex:1];
         compositeName = firstName;
     }
+    
     if(lastName.length > 1) {
         abbreviation = [abbreviation stringByAppendingString:[lastName substringToIndex:1]];
-        if(compositeName)
+        if (compositeName) {
             compositeName = [compositeName stringByAppendingFormat:@" %@", lastName];
-        else
+        } else {
             compositeName = lastName;
+        }
     }
         
-    if([abbreviation isEqualToString:@""]) {
+    if(abbreviation.length == 0) {
         abbreviation = @"??";
         compositeName = @"Unknown";
     }
     
-    NSString* phone = nil;
+    // Pick a phone number to use for this contact
+    
+    NSString* phone = @"";
     ABMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
-    if (ABMultiValueGetCount(phoneNumbers) > 0) {
-        phone = (__bridge_transfer NSString*)
-        ABMultiValueCopyValueAtIndex(phoneNumbers, 0);
-    } else {
-        phone = @"";
+    if (phoneNumbers) {
+        if (ABMultiValueGetCount(phoneNumbers) > 0) {
+            phone = (__bridge_transfer NSString*)
+            ABMultiValueCopyValueAtIndex(phoneNumbers, 0);
+        }
+        CFRelease(phoneNumbers);
     }
-    CFRelease(phoneNumbers);
     
-    NSString *email;
+    // And pick an email address as well
+    
+    NSString *email = @"";
     ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
-    if (ABMultiValueGetCount(emails) > 0) {
-        email = (__bridge_transfer NSString*)
-        ABMultiValueCopyValueAtIndex(emails, 0);
-    } else {
-        email = @"";
+    if (emails) {
+        if (ABMultiValueGetCount(emails) > 0) {
+            email = (__bridge_transfer NSString*)
+            ABMultiValueCopyValueAtIndex(emails, 0);
+        }
+        CFRelease(emails);
     }
-    CFRelease(emails);
     
+    // Now create and save our data
     
-    //ok now create and save our data
     Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact"  inManagedObjectContext:self.managedObjectContext];
     contact.uniqueid = myNum;
     contact.name = compositeName;
     contact.initials = abbreviation;
     contact.owes = 0;
     
-    //create a placeholder for our contact information
-    ContactContactInfo *cinfo = [NSEntityDescription
-                                 insertNewObjectForEntityForName:@"ContactContactInfo"
-                                 inManagedObjectContext:self.managedObjectContext];
+    // The create a placeholder for our contact information
+    
+    ContactContactInfo *cinfo = [NSEntityDescription insertNewObjectForEntityForName:@"ContactContactInfo"
+                                                              inManagedObjectContext:self.managedObjectContext];
     
     cinfo.email = email;
     cinfo.phone = phone;
     contact.contactinfo = cinfo;
+    
     self.editContact = contact;
 
+    // Now let the user pick any additional details
+    
     [self performSegueWithIdentifier:@"edit contact" sender:self];
     return NO;
 }
@@ -348,67 +365,76 @@
     return NO;
 }
 
-#pragma mark - ContactEditorDelegate
+# pragma mark - ContactEditorDelegate
+
 - (void) ContactEditor:(id)Editor Close:(bool)SaveChanges
 {
-    if(SaveChanges) {
-        //confirm we have a first name
-        if(self.editContact.name.length == 0) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Contact Error" message:@"The name is required to create a contact" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    if (!SaveChanges || self.editContact.name.length == 0) {
+        [self.managedObjectContext rollback];
+    } else {
+    
+        // If no initials grab four characters of the name
+        if (self.editContact.initials.length == 0) {
+            NSUInteger length = self.editContact.name.length;
+            length = length > 4 ? 4 : length;
             
-            [alert show];
-            return;
-        }
-        if(self.editContact.initials.length == 0) {
-            self.editContact.initials = [self.editContact.name substringToIndex:4];
+            self.editContact.initials = [self.editContact.name substringToIndex:length];
         }
         
         NSError *error;
         if (![self.managedObjectContext save:&error]) {
-            NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Adding Person" message:@"An error occurred while attempting to save your changes" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
+            NSLog(@"Couldn't save: %@", [error localizedDescription]);
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Save Error"
+                                                            message:@"An error occurred while attempting to save your changes"
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Cancel"
+                                                  otherButtonTitles:nil];
             [alert show];
-
-            //leave them where they are
             return;
         }
-    } else {
-        [self.managedObjectContext rollback];
     }
+    
     self.editContact = nil;
 }
 
 - (void) ContactEditorDelete:(id)Editor {
-    if(!self.editContact.objectID.isTemporaryID) {
-        //delete our object
+    if (!self.editContact.objectID.isTemporaryID) {
+        // Delete our object
         [self.managedObjectContext deleteObject:self.editContact.contactinfo];
         [self.managedObjectContext deleteObject:self.editContact];
         
         NSError *error;
         if (![self.managedObjectContext save:&error]) {
-            NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Adding Person" message:@"An error occurred while attempting to create a new person" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
+            NSLog(@"Couldn't save: %@", error.localizedDescription);
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Adding Contact"
+                                                            message:@"An error occurred while attempting to create a new contact"
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Cancel"
+                                                  otherButtonTitles:nil];
             [alert show];
         }
     
     } else {
-        //we just created it, so delete the inserted object by rollingback
+        // We just created it, so delete the inserted object by rollingback
         [self.managedObjectContext rollback];
     }
 
     self.editContact = nil;
     [self.navigationController popViewControllerAnimated:YES];
-    
 }
 
-#pragma mark - Fetched Controller Delegate
+# pragma mark - Fetched Controller Delegate
+
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
     // The fetch controller is about to start sending change notifications, so prepare the table view for updates.
     [self.tableView beginUpdates];
 }
 
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
+- (void)controller:(NSFetchedResultsController *)controller
+   didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath
+     forChangeType:(NSFetchedResultsChangeType)type
+      newIndexPath:(NSIndexPath *)newIndexPath {
     
     UITableView *tableView = self.tableView;
     
@@ -435,7 +461,9 @@
     }
 }
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id )sectionInfo atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type {
+- (void)controller:(NSFetchedResultsController *)controller
+  didChangeSection:(id )sectionInfo atIndex:(NSUInteger)sectionIndex
+     forChangeType:(NSFetchedResultsChangeType)type {
     
     if (type == NSFetchedResultsChangeInsert) {
         [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
@@ -445,7 +473,6 @@
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    // The fetch controller has sent all current change notifications, so tell the table view to process all updates.
     [self.tableView endUpdates];
 }
 @end

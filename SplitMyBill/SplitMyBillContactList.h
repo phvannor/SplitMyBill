@@ -9,5 +9,10 @@
 #import <UIKit/UIKit.h>
 
 @interface SplitMyBillContactList : UIViewController
+
 @property (nonatomic, weak) NSManagedObjectContext *managedObjectContext;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+-(IBAction)addContact:(id)sender;
+
 @end
