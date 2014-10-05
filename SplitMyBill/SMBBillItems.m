@@ -14,7 +14,7 @@
 #import "Contact.h"
 #import "ContactContactInfo.h"
 #import "SplitMyBillDebtFromBillViewController.h"
-#import "SplitMyBillMainScreenViewController.h"
+#import "SMBMainScreenViewController.h"
 #import "SplitMyBillContactEditorViewController.h"
 #import "SplitMyBillUserOwesTableCellCell.h"
 #import "SMBBillWhoViewController.h"
@@ -280,7 +280,7 @@
 {
     if(Save) {
         //create debts for each option
-        SplitMyBillMainScreenViewController *cont = (SplitMyBillMainScreenViewController *)[self.navigationController.viewControllers objectAtIndex:0];
+        SMBMainScreenViewController *cont = (SMBMainScreenViewController *)[self.navigationController.viewControllers objectAtIndex:0];
         
         SplitMyBillDebtFromBillViewController *debtScreen = (SplitMyBillDebtFromBillViewController *)Editor;
         

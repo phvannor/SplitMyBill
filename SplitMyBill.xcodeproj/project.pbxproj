@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		A205E2CB17EE9BB900D0B6ED /* gear.png in Resources */ = {isa = PBXBuildFile; fileRef = A205E2C917EE9BB900D0B6ED /* gear.png */; };
 		A205E2D517EEA8A600D0B6ED /* gear@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A205E2D417EEA8A600D0B6ED /* gear@2x.png */; };
-		A217E32F19D771B5005D18F6 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A2A3504619D52C1400953604 /* libTestFlight.a */; };
 		A2543C5B17B6170A00425A11 /* SMBBillWhoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2543C5A17B6170A00425A11 /* SMBBillWhoViewController.m */; };
 		A2543C5E17B61EE100425A11 /* SMBBillItems.m in Sources */ = {isa = PBXBuildFile; fileRef = A2543C5D17B61EE100425A11 /* SMBBillItems.m */; };
 		A2543C6117B72F5600425A11 /* SMBBillTotalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2543C6017B72F5600425A11 /* SMBBillTotalViewController.m */; };
@@ -18,6 +17,7 @@
 		A2A3504419D52BDA00953604 /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A2A3504319D52BDA00953604 /* libz.1.dylib */; };
 		A2BDF0A117C0C30300A14FB3 /* undo.png in Resources */ = {isa = PBXBuildFile; fileRef = A2FAB33417C073020045A9E3 /* undo.png */; };
 		A2BDF0A217C0C30300A14FB3 /* undo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A2FAB33517C073020045A9E3 /* undo@2x.png */; };
+		A2E62F5E19E123620005B644 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A2E62F5519E122F80005B644 /* libTestFlight.a */; };
 		A307C4BE15893A120068819D /* SplitMyBillRoundingSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A307C4BD15893A120068819D /* SplitMyBillRoundingSettingsViewController.m */; };
 		A307C4C21589400F0068819D /* SplitMyBillGrandTotalEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A307C4C11589400F0068819D /* SplitMyBillGrandTotalEditViewController.m */; };
 		A30EEB3A1551C6EA007077A0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A30EEB391551C6EA007077A0 /* UIKit.framework */; };
@@ -41,7 +41,7 @@
 		A32402E0160A60EF0075797B /* SplitMyBillContactList.m in Sources */ = {isa = PBXBuildFile; fileRef = A32402DF160A60EF0075797B /* SplitMyBillContactList.m */; };
 		A32402E4160A625B0075797B /* SplitMyBill.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A32402E2160A625B0075797B /* SplitMyBill.xcdatamodeld */; };
 		A32402E6160A63FE0075797B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A32402E5160A63FE0075797B /* CoreData.framework */; };
-		A32402EF160A7D9C0075797B /* SplitMyBillMainScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A32402EE160A7D9C0075797B /* SplitMyBillMainScreenViewController.m */; };
+		A32402EF160A7D9C0075797B /* SMBMainScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A32402EE160A7D9C0075797B /* SMBMainScreenViewController.m */; };
 		A3258FA71624C7DE00DF0D61 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3258FA61624C7DE00DF0D61 /* QuartzCore.framework */; };
 		A32C5346160AA29600BF547D /* ContactContactInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = A32C5345160AA29600BF547D /* ContactContactInfo.m */; };
 		A3310B4115532FA700E5EE7B /* SplitMyBillFreeSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A3310B4015532FA700E5EE7B /* SplitMyBillFreeSettingsTableViewController.m */; };
@@ -49,21 +49,15 @@
 		A3324922155319BC00C305C5 /* BillUser.m in Sources */ = {isa = PBXBuildFile; fileRef = A3324921155319BC00C305C5 /* BillUser.m */; };
 		A332492515532BC500C305C5 /* TipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A332492415532BC500C305C5 /* TipViewController.m */; };
 		A341303B16124E0200C986D0 /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = A341303A16124E0200C986D0 /* Contact.m */; };
-		A345D74916E7F59C0012A86C /* WindowsAzureMobileServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A345D74816E7F59C0012A86C /* WindowsAzureMobileServices.framework */; };
 		A366489A163732F900111D51 /* back.png in Resources */ = {isa = PBXBuildFile; fileRef = A3664898163732F900111D51 /* back.png */; };
 		A366489B163732F900111D51 /* back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A3664899163732F900111D51 /* back@2x.png */; };
 		A366489E16373B8700111D51 /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = A366489C16373B8700111D51 /* plus.png */; };
 		A366489F16373B8700111D51 /* plus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A366489D16373B8700111D51 /* plus@2x.png */; };
 		A370524D1561A87C0032CCE6 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = A370524A1561A87C0032CCE6 /* iTunesArtwork */; };
-		A370524E1561A87C0032CCE6 /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A370524B1561A87C0032CCE6 /* icon@2x.png */; };
-		A370524F1561A87C0032CCE6 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A370524C1561A87C0032CCE6 /* icon.png */; };
 		A370525D1561B1610032CCE6 /* undohighlight.png in Resources */ = {isa = PBXBuildFile; fileRef = A37052591561B1610032CCE6 /* undohighlight.png */; };
 		A370525E1561B1610032CCE6 /* undohighlight@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A370525A1561B1610032CCE6 /* undohighlight@2x.png */; };
 		A370525F1561B1610032CCE6 /* undodefault@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A370525B1561B1610032CCE6 /* undodefault@2x.png */; };
 		A37052601561B1610032CCE6 /* undodefault.png in Resources */ = {isa = PBXBuildFile; fileRef = A370525C1561B1610032CCE6 /* undodefault.png */; };
-		A37568781666F69B0012281D /* launch-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A37568751666F69B0012281D /* launch-568h@2x.png */; };
-		A37568791666F69B0012281D /* launch@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A37568761666F69B0012281D /* launch@2x.png */; };
-		A375687A1666F69B0012281D /* launch.png in Resources */ = {isa = PBXBuildFile; fileRef = A37568771666F69B0012281D /* launch.png */; };
 		A37C1A361666E88400BB4904 /* person-small.png in Resources */ = {isa = PBXBuildFile; fileRef = A37C1A341666E88100BB4904 /* person-small.png */; };
 		A37C1A371666E88400BB4904 /* person-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A37C1A351666E88200BB4904 /* person-small@2x.png */; };
 		A37C1A3A1666E8C000BB4904 /* person.png in Resources */ = {isa = PBXBuildFile; fileRef = A37C1A381666E8A500BB4904 /* person.png */; };
@@ -113,10 +107,10 @@
 		A285DB9217EE5AF6005923B5 /* SMBBillNavigationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBBillNavigationViewController.m; sourceTree = "<group>"; };
 		A28D847419D8F81D007B0878 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SplitMyBill/Images.xcassets; sourceTree = "<group>"; };
 		A2A3504319D52BDA00953604 /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = usr/lib/libz.1.dylib; sourceTree = SDKROOT; };
-		A2A3504619D52C1400953604 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
-		A2A3504919D52C1400953604 /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
-		A2A3504A19D52C1400953604 /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
-		A2A3504B19D52C1400953604 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		A2E62F5519E122F80005B644 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		A2E62F5819E122F80005B644 /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
+		A2E62F5919E122F80005B644 /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
+		A2E62F5A19E122F80005B644 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		A2FAB33417C073020045A9E3 /* undo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = undo.png; sourceTree = "<group>"; };
 		A2FAB33517C073020045A9E3 /* undo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "undo@2x.png"; sourceTree = "<group>"; };
 		A307C4BC15893A120068819D /* SplitMyBillRoundingSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitMyBillRoundingSettingsViewController.h; sourceTree = "<group>"; };
@@ -154,8 +148,8 @@
 		A32402DF160A60EF0075797B /* SplitMyBillContactList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitMyBillContactList.m; sourceTree = "<group>"; };
 		A32402E3160A625B0075797B /* SplitMyBill.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SplitMyBill.xcdatamodel; sourceTree = "<group>"; };
 		A32402E5160A63FE0075797B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		A32402ED160A7D9C0075797B /* SplitMyBillMainScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitMyBillMainScreenViewController.h; sourceTree = "<group>"; };
-		A32402EE160A7D9C0075797B /* SplitMyBillMainScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitMyBillMainScreenViewController.m; sourceTree = "<group>"; };
+		A32402ED160A7D9C0075797B /* SMBMainScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMBMainScreenViewController.h; sourceTree = "<group>"; };
+		A32402EE160A7D9C0075797B /* SMBMainScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBMainScreenViewController.m; sourceTree = "<group>"; };
 		A3258FA61624C7DE00DF0D61 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A32C5344160AA29600BF547D /* ContactContactInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactContactInfo.h; sourceTree = "<group>"; };
 		A32C5345160AA29600BF547D /* ContactContactInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactContactInfo.m; sourceTree = "<group>"; };
@@ -169,21 +163,15 @@
 		A332492415532BC500C305C5 /* TipViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TipViewController.m; sourceTree = "<group>"; };
 		A341303916124E0200C986D0 /* Contact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contact.h; sourceTree = "<group>"; };
 		A341303A16124E0200C986D0 /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
-		A345D74816E7F59C0012A86C /* WindowsAzureMobileServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WindowsAzureMobileServices.framework; path = SplitMyBill/WindowsAzureMobileServices.framework; sourceTree = "<group>"; };
 		A3664898163732F900111D51 /* back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back.png; sourceTree = "<group>"; };
 		A3664899163732F900111D51 /* back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back@2x.png"; sourceTree = "<group>"; };
 		A366489C16373B8700111D51 /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
 		A366489D16373B8700111D51 /* plus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plus@2x.png"; sourceTree = "<group>"; };
 		A370524A1561A87C0032CCE6 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; name = iTunesArtwork; path = ../iTunesArtwork; sourceTree = "<group>"; };
-		A370524B1561A87C0032CCE6 /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon@2x.png"; path = "../icon@2x.png"; sourceTree = "<group>"; };
-		A370524C1561A87C0032CCE6 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../icon.png; sourceTree = "<group>"; };
 		A37052591561B1610032CCE6 /* undohighlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = undohighlight.png; sourceTree = "<group>"; };
 		A370525A1561B1610032CCE6 /* undohighlight@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "undohighlight@2x.png"; sourceTree = "<group>"; };
 		A370525B1561B1610032CCE6 /* undodefault@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "undodefault@2x.png"; sourceTree = "<group>"; };
 		A370525C1561B1610032CCE6 /* undodefault.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = undodefault.png; sourceTree = "<group>"; };
-		A37568751666F69B0012281D /* launch-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "launch-568h@2x.png"; sourceTree = "<group>"; };
-		A37568761666F69B0012281D /* launch@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "launch@2x.png"; sourceTree = "<group>"; };
-		A37568771666F69B0012281D /* launch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch.png; sourceTree = "<group>"; };
 		A37C1A341666E88100BB4904 /* person-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "person-small.png"; sourceTree = "<group>"; };
 		A37C1A351666E88200BB4904 /* person-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "person-small@2x.png"; sourceTree = "<group>"; };
 		A37C1A381666E8A500BB4904 /* person.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = person.png; sourceTree = "<group>"; };
@@ -238,7 +226,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A2A3504419D52BDA00953604 /* libz.1.dylib in Frameworks */,
-				A217E32F19D771B5005D18F6 /* libTestFlight.a in Frameworks */,
+				A2E62F5E19E123620005B644 /* libTestFlight.a in Frameworks */,
 				A3E414A016E69F1C00087EB4 /* MobileCoreServices.framework in Frameworks */,
 				A3BB84C1167145E800D33330 /* Security.framework in Frameworks */,
 				A3258FA71624C7DE00DF0D61 /* QuartzCore.framework in Frameworks */,
@@ -249,7 +237,6 @@
 				A3E514AF1554B52500A712A4 /* MessageUI.framework in Frameworks */,
 				A30EEB3C1551C6EA007077A0 /* Foundation.framework in Frameworks */,
 				A30EEB3E1551C6EA007077A0 /* CoreGraphics.framework in Frameworks */,
-				A345D74916E7F59C0012A86C /* WindowsAzureMobileServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,16 +254,15 @@
 			name = Settings;
 			sourceTree = "<group>";
 		};
-		A2A3504519D52C1400953604 /* TestFlightSDK3.0.2 */ = {
+		A2E62F5419E122F80005B644 /* TestFlightSDK3.0.2 */ = {
 			isa = PBXGroup;
 			children = (
-				A2A3504619D52C1400953604 /* libTestFlight.a */,
-				A2A3504919D52C1400953604 /* TestFlight+AsyncLogging.h */,
-				A2A3504A19D52C1400953604 /* TestFlight+ManualSessions.h */,
-				A2A3504B19D52C1400953604 /* TestFlight.h */,
+				A2E62F5519E122F80005B644 /* libTestFlight.a */,
+				A2E62F5819E122F80005B644 /* TestFlight+AsyncLogging.h */,
+				A2E62F5919E122F80005B644 /* TestFlight+ManualSessions.h */,
+				A2E62F5A19E122F80005B644 /* TestFlight.h */,
 			);
-			name = TestFlightSDK3.0.2;
-			path = "../../../Downloads/TestFlightSDK3.0.2 (1)";
+			path = TestFlightSDK3.0.2;
 			sourceTree = "<group>";
 		};
 		A30EEB2A1551C6E9007077A0 = {
@@ -304,7 +290,6 @@
 				A2A3504319D52BDA00953604 /* libz.1.dylib */,
 				A3BB84C0167145E800D33330 /* Security.framework */,
 				A3E4149F16E69F1C00087EB4 /* MobileCoreServices.framework */,
-				A345D74816E7F59C0012A86C /* WindowsAzureMobileServices.framework */,
 				A388D1F0155C047400A964AB /* AddressBook.framework */,
 				A388D1F1155C047400A964AB /* AddressBookUI.framework */,
 				A3E514AE1554B52500A712A4 /* MessageUI.framework */,
@@ -330,8 +315,8 @@
 				A30EEB481551C6EA007077A0 /* SplitMyBillAppDelegate.h */,
 				A30EEB491551C6EA007077A0 /* SplitMyBillAppDelegate.m */,
 				A30EEB4B1551C6EA007077A0 /* MainStoryboard.storyboard */,
-				A32402ED160A7D9C0075797B /* SplitMyBillMainScreenViewController.h */,
-				A32402EE160A7D9C0075797B /* SplitMyBillMainScreenViewController.m */,
+				A32402ED160A7D9C0075797B /* SMBMainScreenViewController.h */,
+				A32402EE160A7D9C0075797B /* SMBMainScreenViewController.m */,
 				A30EEB401551C6EA007077A0 /* Supporting Files */,
 			);
 			name = SplitTheBill;
@@ -442,7 +427,7 @@
 		A38F02FD16277B5D0075279F /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				A2A3504519D52C1400953604 /* TestFlightSDK3.0.2 */,
+				A2E62F5419E122F80005B644 /* TestFlightSDK3.0.2 */,
 			);
 			path = Libraries;
 			sourceTree = "<group>";
@@ -456,9 +441,6 @@
 				A2FAB33517C073020045A9E3 /* undo@2x.png */,
 				A31E07A116D19FF700632D8C /* menu.png */,
 				A31E07A216D19FF700632D8C /* menu@2x.png */,
-				A37568751666F69B0012281D /* launch-568h@2x.png */,
-				A37568761666F69B0012281D /* launch@2x.png */,
-				A37568771666F69B0012281D /* launch.png */,
 				A37C1A4C1666F02800BB4904 /* lastbill@2x.png */,
 				A37C1A4D1666F02A00BB4904 /* lastbill.png */,
 				A37C1A4E1666F02D00BB4904 /* simplebill@2x.png */,
@@ -488,8 +470,6 @@
 				A370525B1561B1610032CCE6 /* undodefault@2x.png */,
 				A370525C1561B1610032CCE6 /* undodefault.png */,
 				A370524A1561A87C0032CCE6 /* iTunesArtwork */,
-				A370524B1561A87C0032CCE6 /* icon@2x.png */,
-				A370524C1561A87C0032CCE6 /* icon.png */,
 				A388D1E3155B260400A964AB /* button-highlight.png */,
 				A388D1E4155B260400A964AB /* button-default.png */,
 			);
@@ -559,8 +539,6 @@
 				A388D1E5155B260400A964AB /* button-highlight.png in Resources */,
 				A388D1E6155B260400A964AB /* button-default.png in Resources */,
 				A370524D1561A87C0032CCE6 /* iTunesArtwork in Resources */,
-				A370524E1561A87C0032CCE6 /* icon@2x.png in Resources */,
-				A370524F1561A87C0032CCE6 /* icon.png in Resources */,
 				A370525D1561B1610032CCE6 /* undohighlight.png in Resources */,
 				A370525E1561B1610032CCE6 /* undohighlight@2x.png in Resources */,
 				A370525F1561B1610032CCE6 /* undodefault@2x.png in Resources */,
@@ -592,9 +570,6 @@
 				A37C1A551666F04100BB4904 /* simplebill.png in Resources */,
 				A37C1A561666F04100BB4904 /* contacts@2x.png in Resources */,
 				A37C1A571666F04100BB4904 /* contacts.png in Resources */,
-				A37568781666F69B0012281D /* launch-568h@2x.png in Resources */,
-				A37568791666F69B0012281D /* launch@2x.png in Resources */,
-				A375687A1666F69B0012281D /* launch.png in Resources */,
 				A31E07A316D19FF700632D8C /* menu.png in Resources */,
 				A31E07A416D19FF700632D8C /* menu@2x.png in Resources */,
 			);
@@ -623,7 +598,7 @@
 				A307C4C21589400F0068819D /* SplitMyBillGrandTotalEditViewController.m in Sources */,
 				A32402E0160A60EF0075797B /* SplitMyBillContactList.m in Sources */,
 				A32402E4160A625B0075797B /* SplitMyBill.xcdatamodeld in Sources */,
-				A32402EF160A7D9C0075797B /* SplitMyBillMainScreenViewController.m in Sources */,
+				A32402EF160A7D9C0075797B /* SMBMainScreenViewController.m in Sources */,
 				A32C5346160AA29600BF547D /* ContactContactInfo.m in Sources */,
 				A3CF31A4160AD96000CC80E1 /* SplitMyBillContactEditorViewController.m in Sources */,
 				A3ECA61D160D058B00D884FF /* SplitMyBillContactDebtViewController.m in Sources */,
@@ -739,7 +714,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Phillip Van Nortwick (GC4JQM234E)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -749,17 +723,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SplitMyBill/SplitMyBill-Prefix.pch";
 				INFOPLIST_FILE = "SplitMyBill/SplitMyBill-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/phillipvannortwick/GitHub/SplitMyBill/Libraries/TestFlight,
-					"$(PROJECT_DIR)/Libraries/TestFlight",
 					"$(PROJECT_DIR)/Libraries/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)/Libraries",
-					/Users/phillipvannortwick/Downloads/TestFlightSDK3.0.2,
-					"(1)",
-					/Users/phillipvannortwick/Downloads/TestFlightSDK3.0.2,
-					"(1)",
 				);
 				PRODUCT_NAME = splitmybill;
 				PROVISIONING_PROFILE = "8c817a0c-38de-407e-856a-41f72d694fe5";
@@ -773,7 +741,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -783,17 +750,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SplitMyBill/SplitMyBill-Prefix.pch";
 				INFOPLIST_FILE = "SplitMyBill/SplitMyBill-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/phillipvannortwick/GitHub/SplitMyBill/Libraries/TestFlight,
-					"$(PROJECT_DIR)/Libraries/TestFlight",
 					"$(PROJECT_DIR)/Libraries/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)/Libraries",
-					/Users/phillipvannortwick/Downloads/TestFlightSDK3.0.2,
-					"(1)",
-					/Users/phillipvannortwick/Downloads/TestFlightSDK3.0.2,
-					"(1)",
 				);
 				PRODUCT_NAME = splitmybill;
 				PROVISIONING_PROFILE = "8c817a0c-38de-407e-856a-41f72d694fe5";
@@ -839,7 +800,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -849,20 +809,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SplitMyBill/SplitMyBill-Prefix.pch";
 				INFOPLIST_FILE = "SplitMyBill/SplitMyBill-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/phillipvannortwick/GitHub/SplitMyBill/Libraries/TestFlight,
-					"$(PROJECT_DIR)/Libraries/TestFlight",
 					"$(PROJECT_DIR)/Libraries/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)/Libraries",
-					/Users/phillipvannortwick/Downloads/TestFlightSDK3.0.2,
-					"(1)",
-					/Users/phillipvannortwick/Downloads/TestFlightSDK3.0.2,
-					"(1)",
 				);
 				PRODUCT_NAME = splitmybill;
-				PROVISIONING_PROFILE = "8c817a0c-38de-407e-856a-41f72d694fe5";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

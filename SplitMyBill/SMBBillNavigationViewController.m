@@ -7,7 +7,7 @@
 //
 
 #import "SMBBillNavigationViewController.h"
-#import "SplitMyBillMainScreenViewController.h"
+#import "SMBMainScreenViewController.h"
 #import "SplitMyBillDebtFromBillViewController.h"
 #import "Debt.h"
 #import "Contact.h"

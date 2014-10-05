@@ -13,10 +13,12 @@
 - (void) BillAddDebtDelegate:(id)Editor AndSave:(bool)Save;
 @end
 
-@interface SplitMyBillDebtFromBillViewController : UIViewController
+@interface SplitMyBillDebtFromBillViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+
 @property (nonatomic, weak) BillLogic *billlogic;
 @property (nonatomic, weak) id delegate;
 @property (nonatomic, strong) NSMutableArray *debtUsers;
 @property (nonatomic, strong) NSMutableArray *debtAmounts;
 - (NSString *) notes;
+
 @end

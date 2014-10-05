@@ -6,7 +6,7 @@
 //
 //
 
-#import "SplitMyBillMainScreenViewController.h"
+#import "SMBMainScreenViewController.h"
 #import "SplitMyBillContactList.h"
 #import "BillLogic.h"
 #import <CoreData/CoreData.h>
@@ -16,7 +16,7 @@
 #import "SplitMyBillAllBillsViewController.h"
 #import "SMBBillNavigationViewController.h"
 
-@interface SplitMyBillMainScreenViewController () <BillListDelegate>
+@interface SMBMainScreenViewController () <BillListDelegate>
 
 @property (nonatomic, strong) BillLogic *BillLogic;
 @property (nonatomic, strong) NSArray *debtList;
@@ -33,7 +33,7 @@
 
 @end
 
-@implementation SplitMyBillMainScreenViewController
+@implementation SMBMainScreenViewController
 
 @synthesize BillLogic = _BillLogic;
 - (BillLogic *) BillLogic {
@@ -150,6 +150,45 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
+    
+    self.oweField.text = @"$--.--";
+    self.owedField.text = @"$--.--";
+    
+    // Begin loading debt information
+    [self.managedObjectContext performBlock:^{
+        // Load debts & calculate owed & due
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Contact"];
+        
+        // Specify criteria for filtering which objects to fetch
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"owes <> 0"];
+        
+        // Specify how the fetched objects should be sorted
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"owes"
+                                                                       ascending:YES];
+        fetchRequest.sortDescriptors = @[sortDescriptor];
+        
+        NSError *error = nil;
+        NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        if (fetchedObjects == nil) {
+            // Show on screen error
+            NSLog(@"Error loading contact debts: %@", error);
+        }
+        
+        NSInteger owe = 0;
+        NSInteger owed = 0;
+        for (Contact *contact in fetchedObjects) {
+            if (contact.owes > 0) {
+                owed += [contact.owes integerValue];
+            } else {
+                owe += [contact.owes integerValue];
+            }
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.owedField.text = [BillLogic formatMoneyWithInt:owed];
+            self.oweField.text = [BillLogic formatMoneyWithInt:owe];
+        });
+    }];
     
     // Reload the correct data
     self.loadedData = 0;

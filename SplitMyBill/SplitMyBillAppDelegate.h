@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
-#import <WindowsAzureMobileServices/WindowsAzureMobileServices.h>
 
 @interface SplitMyBillAppDelegate : UIResponder <UIApplicationDelegate>
 
@@ -20,5 +19,7 @@
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
+
+
 
 @end

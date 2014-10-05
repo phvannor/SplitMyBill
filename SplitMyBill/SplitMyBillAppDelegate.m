@@ -8,7 +8,7 @@
 
 #import "SplitMyBillAppDelegate.h"
 #import "Contact.h"
-#import "SplitMyBillMainScreenViewController.h"
+#import "SMBMainScreenViewController.h"
 #import "SplitMyBillContactDebtViewController.h"
 #import "TestFlight.h"
 
@@ -31,7 +31,7 @@
     
     //give our default view the object context
     UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
-    SplitMyBillMainScreenViewController *controller = (SplitMyBillMainScreenViewController *)navigationController.topViewController;
+    SMBMainScreenViewController *controller = (SMBMainScreenViewController *)navigationController.topViewController;
     controller.managedObjectContext = self.managedObjectContext;
     
     /*
@@ -71,61 +71,6 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
-/**
- * Called when a payment finishes and the data is being sent back
- */
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    NSLog(@"openURL: %@", url);
-    /*
-    return [self.venmoClient openURL:url completionHandler:^(VenmoTransaction *transaction, NSError *error) {
-        if (transaction) {
-            NSString *success = (transaction.success ? @"Success" : @"Failure");
-            NSString *title = [@"Transaction " stringByAppendingString:success];
-     
-             NSString *message = [@"payment_id: " stringByAppendingFormat:@"%@. %@ %@ %@ (%@) $%@ %@",
-                                 transaction.transactionID,
-                                 transaction.fromUserID,
-                                 transaction.typeStringPast,
-                                 transaction.toUserHandle,
-                                 transaction.toUserID,
-                                 transaction.amountString,
-                                 transaction.note];
-            
-            //tell our caller what was actually paid to them...
-            if(success) {
-                //get the debt view controller
-                UIViewController *cont = self.window.rootViewController;
-                
-                SplitMyBillContactDebtViewController *debtCont = (SplitMyBillContactDebtViewController *)
-                [cont.navigationController topViewController];
-                if(!debtCont) {
-                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:@"Your debt was successfully paid in Venmo, but an error has prevented the debt from being updated in SplitMyBill"
-                            delegate:nil
-                            cancelButtonTitle:@"OK"
-                            otherButtonTitles:nil];
-                    [alertView show];
-                    return;
-                }
-                
-                [debtCont outsideDebtSettlementForAmount:transaction.amount toUser:transaction.toUserID withNote:transaction.note];
-            
-            } else {
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:@"Debt was not settled in Venmo successfully"
-                                delegate:nil
-                                cancelButtonTitle:@"OK"
-                                otherButtonTitles:nil];
-                [alertView show];
-            }
-        } else { // error
-            NSLog(@"transaction error code: %i", error.code);
-        }
-    }];
-    */
-    
-    return YES;
-}
-
 - (void)saveContext
 {
     NSError *error = nil;
@@ -152,7 +97,7 @@
     
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
     if (coordinator != nil) {
-        _managedObjectContext = [[NSManagedObjectContext alloc] init];
+        _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         [_managedObjectContext setPersistentStoreCoordinator:coordinator];
     }
     return _managedObjectContext;
@@ -165,6 +110,7 @@
     if (_managedObjectModel != nil) {
         return _managedObjectModel;
     }
+    
     NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"SplitMyBill" withExtension:@"momd"];
     _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     return _managedObjectModel;
@@ -183,7 +129,6 @@
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc]
                                    initWithManagedObjectModel:[self managedObjectModel]];
-    
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
                                                    configuration:nil
                                                              URL:storeURL
@@ -191,9 +136,9 @@
                                                            error:&error])
     {
         NSDictionary *options = @{
-                                  NSMigratePersistentStoresAutomaticallyOption:@YES,
-                                  NSInferMappingModelAutomaticallyOption:@YES
-                                  };
+            NSMigratePersistentStoresAutomaticallyOption:@YES,
+            NSInferMappingModelAutomaticallyOption:@YES
+        };
         
         if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
                                                        configuration:nil

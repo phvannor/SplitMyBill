@@ -252,12 +252,6 @@
 -(void)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
                         didSelectPerson:(ABRecordRef)person
 {
-    [self peoplePickerNavigationController:peoplePicker shouldContinueAfterSelectingPerson:person];
-}
-
-- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
-      shouldContinueAfterSelectingPerson:(ABRecordRef)person
-{
     ABRecordID uniqueID = ABRecordGetRecordID(person);
     NSNumber *myNum = [NSNumber numberWithInteger:uniqueID];
     
@@ -279,7 +273,8 @@
                                                   cancelButtonTitle:@"Cancel"
                                                   otherButtonTitles: nil];
             [alert show];
-            return NO;
+            
+            return;
         }
     }
     
@@ -353,9 +348,7 @@
     self.editContact = contact;
 
     // Now let the user pick any additional details
-    
     [self performSegueWithIdentifier:@"edit contact" sender:self];
-    return NO;
 }
 
 - (BOOL)peoplePickerNavigationController:

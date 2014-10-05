@@ -9,12 +9,14 @@
 #import "SplitMyBillDebtFromBillViewController.h"
 
 @interface SplitMyBillDebtFromBillViewController ()
+
 @property (nonatomic, strong) BillUser *payingUser;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) UITextField *activeField;
 
 - (IBAction)buttonSave:(id)sender;
 - (IBAction)buttonCancel:(id)sender;
+
 @end
 
 @implementation SplitMyBillDebtFromBillViewController
@@ -48,13 +50,11 @@
 {
     [super viewWillAppear:animated];
     
-    
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
+    //[self.navigationController setNavigationBarHidden:NO animated:animated];
 }
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
     [self registerForKeyboardNotifications];
 }
 
@@ -69,10 +69,11 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    if(!self.payingUser)
+    if (!self.payingUser) {
         return 1;
-    else
+    } else {
         return 3;
+    }
 }
 
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -90,10 +91,11 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if(section == 0) {
-        if(!self.payingUser)
+        if (!self.payingUser) {
             return self.billlogic.users.count;
-        else
-            return 1;        
+        } else {
+            return 1;
+        }
     } else if(section == 1) {
         return self.debtUsers.count;
     } else if(section == 2) {
@@ -146,50 +148,10 @@
     return cell;
 }
 
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
 #pragma mark - Table view delegate
 - (void) calculateOwedAmounts
 {
-    if(self.payingUser.isSelf) {
+    if (self.payingUser.isSelf) {
         self.debtUsers = [[NSMutableArray alloc] init];
         self.debtAmounts = [[NSMutableArray alloc] init];
 
@@ -232,6 +194,15 @@
         }
         
         [self.tableView reloadData];
+    }
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section > 0) {
+        return 57;
+    } else {
+        return 44;
     }
 }
 

@@ -9,7 +9,7 @@
 
 #import "SplitMyBillUserDetailViewController.h"
 #import "SplitMyBillContactEditorViewController.h"
-#import "SplitMyBillMainScreenViewController.h"
+#import "SMBMainScreenViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
 @interface SplitMyBillUserDetailViewController () <UITableViewDataSource, UITableViewDelegate, ContactEditorDelegate>
@@ -142,7 +142,7 @@
 - (void) ContactEditor:(id)Editor Close:(bool)SaveChanges
 {
     if(self.user.contact) {
-        SplitMyBillMainScreenViewController *cont = (SplitMyBillMainScreenViewController *)[self.navigationController.viewControllers objectAtIndex:0];
+        SMBMainScreenViewController *cont = (SMBMainScreenViewController *)[self.navigationController.viewControllers objectAtIndex:0];
         
         if(SaveChanges) {
             NSError *error;
@@ -187,7 +187,7 @@
 - (void) ContactEditorDelete:(id)Editor {
     //?deletes are more complicated???
     
-    SplitMyBillMainScreenViewController *cont = (SplitMyBillMainScreenViewController *)[self.navigationController.viewControllers objectAtIndex:0];
+    SMBMainScreenViewController *cont = (SMBMainScreenViewController *)[self.navigationController.viewControllers objectAtIndex:0];
         
     //delete our object
     [cont.managedObjectContext deleteObject:self.user.contact.contactinfo];
