@@ -209,7 +209,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder=" notes" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NLI-9t-p9i">
-                                <rect key="frame" x="10" y="205" width="300" height="45"/>
+                                <rect key="frame" x="10" y="199.5" width="300" height="45"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="SPB-3Q-Gs0"/>
@@ -222,7 +222,7 @@
                                 </connections>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="$0.00" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2GY-4X-wFU">
-                                <rect key="frame" x="110" y="162" width="100" height="35"/>
+                                <rect key="frame" x="110" y="156.5" width="100" height="35"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="35" id="aYq-aD-VLx"/>
@@ -234,7 +234,7 @@
                                 </connections>
                             </textField>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Xe4-v7-LXn">
-                                <rect key="frame" x="69" y="126" width="183" height="29"/>
+                                <rect key="frame" x="69" y="120.5" width="183" height="29"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="183" id="Ga3-UI-bBO"/>
                                     <constraint firstAttribute="height" constant="28" id="XSI-LD-ISC"/>
@@ -248,7 +248,7 @@
                                 </connections>
                             </segmentedControl>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="User name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PRB-Ek-yro">
-                                <rect key="frame" x="0.0" y="79" width="320" height="32"/>
+                                <rect key="frame" x="0.0" y="79" width="320" height="31.5"/>
                                 <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="23"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
@@ -263,7 +263,7 @@
                             <constraint firstItem="PRB-Ek-yro" firstAttribute="centerX" secondItem="Xe4-v7-LXn" secondAttribute="centerX" id="LqK-iG-Eo5"/>
                             <constraint firstItem="PRB-Ek-yro" firstAttribute="top" secondItem="KdG-vY-DLi" secondAttribute="bottom" constant="15" id="PzY-lZ-CU4"/>
                             <constraint firstItem="NLI-9t-p9i" firstAttribute="leading" secondItem="3yQ-nE-tnt" secondAttribute="leading" constant="10" id="T2Z-IL-K0L"/>
-                            <constraint firstItem="Xe4-v7-LXn" firstAttribute="top" secondItem="PRB-Ek-yro" secondAttribute="bottom" constant="15" id="kxc-tz-42h"/>
+                            <constraint firstItem="Xe4-v7-LXn" firstAttribute="top" secondItem="PRB-Ek-yro" secondAttribute="bottom" constant="10" id="kxc-tz-42h"/>
                             <constraint firstAttribute="trailing" secondItem="NLI-9t-p9i" secondAttribute="trailing" constant="10" id="pBk-cy-PZd"/>
                             <constraint firstAttribute="trailing" secondItem="2GY-4X-wFU" secondAttribute="trailing" constant="110" id="tfF-TA-jUI"/>
                             <constraint firstItem="PRB-Ek-yro" firstAttribute="leading" secondItem="3yQ-nE-tnt" secondAttribute="leading" id="vii-Ff-5wN"/>
@@ -3207,7 +3207,10 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="bottom" placeholder="Text" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="cqo-R0-Ebr">
-                                                    <rect key="frame" x="20" y="11.5" width="290" height="20"/>
+                                                    <rect key="frame" x="20" y="7.5" width="290" height="24"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="24" id="Xb2-qe-D3c"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="words" returnKeyType="done"/>
                                                     <connections>
@@ -3255,6 +3258,9 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cw2-2u-VSW">
                                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="44" id="uAu-E8-75w"/>
+                                                    </constraints>
                                                     <state key="normal" title="Delete User">
                                                         <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -3265,7 +3271,6 @@
                                                 </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="bottom" secondItem="cw2-2u-VSW" secondAttribute="bottom" id="Gvj-FJ-gGy"/>
                                                 <constraint firstItem="cw2-2u-VSW" firstAttribute="top" secondItem="Lle-Lt-AYX" secondAttribute="top" id="SI2-sd-DSj"/>
                                                 <constraint firstItem="cw2-2u-VSW" firstAttribute="trailing" secondItem="Lle-Lt-AYX" secondAttribute="trailing" id="Zut-ym-8Gv"/>
                                                 <constraint firstItem="cw2-2u-VSW" firstAttribute="leading" secondItem="Lle-Lt-AYX" secondAttribute="leading" id="yHw-Qi-UTd"/>
@@ -3333,8 +3338,8 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="DLE-4q-Lby"/>
-        <segue reference="uHw-Bc-pFl"/>
         <segue reference="itd-TB-Krb"/>
+        <segue reference="W7v-t5-eNJ"/>
+        <segue reference="uHw-Bc-pFl"/>
     </inferredMetricsTieBreakers>
 </document>

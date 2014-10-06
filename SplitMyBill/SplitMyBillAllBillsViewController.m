@@ -7,8 +7,8 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "SplitMyBillAllBillsViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "SplitMyBillAllBillsViewController.h"
 #import "Bill.h"
 #import "BillLogic.h"
 #import "SMBBillNavigationViewController.h"
@@ -19,24 +19,21 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) Bill *editBill;
 @property (nonatomic, strong) BillLogic *logic;
+
 @end
 
-@implementation SplitMyBillAllBillsViewController
-@synthesize bills = _bills;
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize tableView = _tableView;
-@synthesize editBill = _editBill;
-@synthesize logic = _logic;
 
-- (IBAction)addBill:(id)sender {
+@implementation SplitMyBillAllBillsViewController
+
+-(IBAction)addBill:(id)sender {
     self.editBill = [self.delegate BillListCreateBill:self];
     [self performSegueWithIdentifier:@"bill" sender:self];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
-    if([segue.identifier isEqualToString:@"bill"]) {
-         self.logic = [[BillLogic alloc] initWithBill:self.editBill andContext:self.managedObjectContext];        
+    if ([segue.identifier isEqualToString:@"bill"]) {
+         self.logic = [[BillLogic alloc] initWithBill:self.editBill
+                                           andContext:self.managedObjectContext];
         
         SMBBillNavigationViewController *controller = segue.destinationViewController;
         controller.bill = self.editBill;
@@ -50,21 +47,17 @@
         return self.bills;
     }
     
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription
-                                   entityForName:@"Bill" inManagedObjectContext:self.managedObjectContext];
-    
-    [fetchRequest setEntity:entity];
-    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"created" ascending:NO];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Bill"];
+    NSSortDescriptor *sort = [NSSortDescriptor  sortDescriptorWithKey:@"created" ascending:NO];
     fetchRequest.sortDescriptors = @[sort];
-    fetchRequest.fetchBatchSize = 20;
+    fetchRequest.fetchBatchSize = 30;
     
     [NSFetchedResultsController deleteCacheWithName:@"AllBills"];
     NSFetchedResultsController *fetchResults =
-    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-        managedObjectContext:self.managedObjectContext
-        sectionNameKeyPath:nil
-        cacheName:@"AllBills" ];
+        [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                            managedObjectContext:self.managedObjectContext
+                                              sectionNameKeyPath:nil
+                                                       cacheName:@"AllBills" ];
     
     self.bills = fetchResults;
     self.bills.delegate = self;
@@ -133,10 +126,11 @@
     Bill  *bill = [self.bills objectAtIndexPath:indexPath];
 
     UILabel *label = (UILabel *)[cell viewWithTag:10];
-    if(bill.title.length > 0)
+    if (bill.title.length > 0) {
         label.text = bill.title;
-    else
+    } else {
         label.text = @"Bill";
+    }
     
     label = (UILabel *)[cell viewWithTag:11];
     
@@ -178,7 +172,10 @@
 {
      if (editingStyle == UITableViewCellEditingStyleDelete) {
          // Delete the row from the data source
-         [self.managedObjectContext deleteObject:[self.bills objectAtIndexPath:indexPath]];
+         [self.managedObjectContext performBlockAndWait:^{
+             [self.managedObjectContext deleteObject:[self.bills objectAtIndexPath:indexPath]];
+             [self.managedObjectContext save:nil];
+         }];
      }
 }
 
@@ -215,10 +212,8 @@
             break;
             
         case NSFetchedResultsChangeMove:
-            [tableView deleteRowsAtIndexPaths:[NSArray
-                                               arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            [tableView insertRowsAtIndexPaths:[NSArray
-                                               arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
             break;
     }
 }

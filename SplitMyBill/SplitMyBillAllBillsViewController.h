@@ -13,7 +13,9 @@
 - (Bill *) BillListCreateBill:(id)ListController;
 @end
 
+
 @interface SplitMyBillAllBillsViewController : UIViewController
+
 @property (nonatomic, weak) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, weak) id<BillListDelegate> delegate;
 

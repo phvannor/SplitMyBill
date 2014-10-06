@@ -183,8 +183,8 @@
             if (!self.contact) {
                 self.contact = contact;
             }
-            
-            if (contact.owes > 0) {
+                        
+            if ([contact.owes integerValue] > 0) {
                 owed += [contact.owes integerValue];
             } else {
                 owe += [contact.owes integerValue];

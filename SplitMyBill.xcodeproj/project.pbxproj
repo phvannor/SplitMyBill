@@ -714,7 +714,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Phillip Van Nortwick (GC4JQM234E)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Phillip Van Nortwick (GC4JQM234E)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -730,7 +730,7 @@
 					"$(PROJECT_DIR)/Libraries",
 				);
 				PRODUCT_NAME = splitmybill;
-				PROVISIONING_PROFILE = "8c817a0c-38de-407e-856a-41f72d694fe5";
+				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
@@ -741,7 +741,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Phillip Van Nortwick (GC4JQM234E)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -757,7 +757,7 @@
 					"$(PROJECT_DIR)/Libraries",
 				);
 				PRODUCT_NAME = splitmybill;
-				PROVISIONING_PROFILE = "8c817a0c-38de-407e-856a-41f72d694fe5";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -800,7 +800,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Phillip Van Nortwick (VYK92D7H94)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
