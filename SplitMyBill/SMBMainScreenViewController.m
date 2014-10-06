@@ -7,7 +7,7 @@
 //
 
 #import "SMBMainScreenViewController.h"
-#import "SplitMyBillContactList.h"
+#import "SMBContactList.h"
 #import "BillLogic.h"
 #import <CoreData/CoreData.h>
 #import "Contact.h"
@@ -19,7 +19,6 @@
 @interface SMBMainScreenViewController () <BillListDelegate>
 
 @property (nonatomic, strong) BillLogic *BillLogic;
-@property (nonatomic, strong) NSArray *debtList;
 @property (nonatomic, strong) NSArray *billList;
 
 @property (nonatomic) NSInteger loadedData;
@@ -30,6 +29,9 @@
 @property (strong, nonatomic) NSArray *gridConstraints;
 @property (strong, nonatomic) NSArray *addedContstraints;
 @property (strong, nonatomic) Bill *editBill;
+
+@property (weak, nonatomic) IBOutlet UICollectionView *debtList;
+@property (strong, nonatomic) Contact *contact;
 
 @end
 
@@ -66,7 +68,7 @@
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     if([segue.identifier isEqualToString:@"contacts"]) {
-        SplitMyBillContactList *controller = segue.destinationViewController;
+        SMBContactList *controller = segue.destinationViewController;
         controller.managedObjectContext = self.managedObjectContext;
         return;
     }
@@ -176,7 +178,12 @@
         
         NSInteger owe = 0;
         NSInteger owed = 0;
+        self.contact = nil;
         for (Contact *contact in fetchedObjects) {
+            if (!self.contact) {
+                self.contact = contact;
+            }
+            
             if (contact.owes > 0) {
                 owed += [contact.owes integerValue];
             } else {
@@ -184,9 +191,12 @@
             }
         }
         
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             self.owedField.text = [BillLogic formatMoneyWithInt:owed];
             self.oweField.text = [BillLogic formatMoneyWithInt:owe];
+            
+            [self.debtList reloadData];
         });
     }];
     
@@ -197,6 +207,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.debtList.dataSource = self;
 }
 
 - (void)viewDidUnload
@@ -230,6 +242,32 @@
 - (Bill *) BillListCreateBill:(id)ListController
 {
     return [self createBill];
+}
+
+#pragma mark CollectionView
+
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    if (self.contact) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *cellId = @"contact";
+    if ([self.contact.uniqueid integerValue] == -1) {
+        cellId = @"contactInitials";
+    }
+    
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
+    
+    // UIImageView *imageView = (UIImageView *)[cell viewWithTag:1];
+    
+    
+    return cell;
 }
 
 @end

@@ -657,50 +657,43 @@
     //if we are using a data model object, these become BillPersons...
     if(user.isSelf) {
         //verify no other user is flagged as self
-        if([self getSelf])
+        if ([self getSelf]) {
             return NO;
-    }
-    
-    if(!user.person) {
-        //build person object & save model?
-        user.person  = [NSEntityDescription insertNewObjectForEntityForName:@"BillPerson" inManagedObjectContext:self.managedContext];
-        
-        user.person.contact = user.contact;
-        if(!user.contact) {
-            //populate fields manually instead...
-            user.person.name = user.name;
-            user.person.initials = user.abbreviation;
-            user.person.phone = user.phone;
-            user.person.email = user.email;
-        }
-        
-        user.person.isMe = [NSNumber numberWithBool:user.isSelf];
-        
-    } else if([self.bill.people containsObject:user.person]) {
-            return NO;
-    }
-    
-    //add person onto the bill
-    [self.bill addPeopleObject:user.person];
-    
-    //if simple mode, users get added to each object when added
-    if([self.bill.type integerValue] == 1) {
-        if(self.items.count > 0) {
-            BillLogicItem *item = [self.items objectAtIndex:0];
-            [item addUser:user];
-        
-            self.userValuesCalculated = NO;
         }
     }
     
-    //save off our changes
-    NSError *error = nil;
-    if(![self.managedContext save:&error]) {
+    __block NSError *error;
+    __block BOOL saveSuccess = NO;
+    [self.managedContext performBlockAndWait:^{
+        if (!user.person) {
+            //build person object & save model?
+            user.person  = [NSEntityDescription insertNewObjectForEntityForName:@"BillPerson" inManagedObjectContext:self.managedContext];
+            
+            user.person.contact = user.contact;
+            if (!user.contact) {
+                //populate fields manually instead...
+                user.person.name = user.name;
+                user.person.initials = user.abbreviation;
+                user.person.phone = user.phone;
+                user.person.email = user.email;
+            }
+            
+            user.person.isMe = [NSNumber numberWithBool:user.isSelf];
+            
+        }
+        
+        if (![self.bill.people containsObject:user.person]) {
+            [self.bill addPeopleObject:user.person];
+            saveSuccess = [self.managedContext save:&error];
+        }
+    }];
+    
+    if (!saveSuccess) {
         return NO;
     }
     
-    [self.users addObject: user];    
-    if(self.bill.people.count == 2) {
+    [self.users addObject:user];
+    if (self.bill.people.count == 2) {
         //when we go from 1 to 2 users, we need to reset all splits
         for(BillLogicItem *item in self.items) {
             item.split = 1;
@@ -708,6 +701,7 @@
     }
     
     self.userValuesCalculated = NO;
+    
     return YES;
 }
 

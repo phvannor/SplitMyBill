@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SMBMainScreenViewController : UIViewController;
+@interface SMBMainScreenViewController : UIViewController <UICollectionViewDataSource>
+
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 
 - (IBAction)buttonNew:(id)sender;

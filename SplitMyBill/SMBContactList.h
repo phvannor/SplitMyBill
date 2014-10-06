@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SplitMyBillContactList : UIViewController
+@interface SMBContactList : UIViewController
 
 @property (nonatomic, weak) NSManagedObjectContext *managedObjectContext;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;

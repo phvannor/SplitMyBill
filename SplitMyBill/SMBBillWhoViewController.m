@@ -278,7 +278,7 @@
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    if(indexPath.section == SECTION_CONTACTS) {
+    if (indexPath.section == SECTION_CONTACTS) {
         Contact *contact = [self.contactListController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
         UIImageView *image = (UIImageView *)[cell viewWithTag:1];
         image.hidden = !image.hidden;
@@ -292,7 +292,7 @@
             user.contact = contact;
             [self.logic addUser:user];
         }
-    } else if(indexPath.section == SECTION_GENERICS){
+    } else if (indexPath.section == SECTION_GENERICS){
         //can only remove users
         BillUser *user = [self.logic getGenericUser:indexPath.row];
         [self.logic removeUser:user];
@@ -302,7 +302,7 @@
         else
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
         
-    } else if(indexPath.section == SECTION_SELF) {
+    } else if (indexPath.section == SECTION_SELF) {
         UIImageView *image = (UIImageView *)[cell viewWithTag:1];
         image.hidden = !image.hidden;
         if(image.hidden) {
@@ -459,21 +459,22 @@
     
     // Select the existing person if contact already present
     // Check if they gave us access to their contacts list
+    
+    __block BOOL foundContact = NO;
     if (uniqueID != kABRecordInvalidID) {
-        NSFetchRequest *fetch = [[NSFetchRequest alloc] init];
-        NSEntityDescription *entity = [NSEntityDescription
-                                       entityForName:@"Contact"
-                                       inManagedObjectContext:self.managedObjectContext];
-        
-        [fetch setEntity:entity];
-        [fetch setFetchLimit:1];
-        [fetch setPredicate:[NSPredicate predicateWithFormat:@"uniqueid == %@", myNum]];
-        
-        NSError *error;
-        NSArray *contacts = [self.managedObjectContext executeFetchRequest:fetch error:&error];
-        if(contacts.count == 1) {
-            return;
-        }
+        [self.managedObjectContext performBlockAndWait:^{
+            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Contact"];
+            fetchRequest.fetchLimit = 1;
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"uniqueid == %@", myNum];
+
+            NSError *error;
+            NSArray *contacts = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+            foundContact = contacts.count == 1;
+        }];
+    }
+    
+    if (foundContact) {
+        return;
     }
 
     //Generate the contact's name
@@ -522,30 +523,37 @@
     }
     CFRelease(emails);
 
-    // Now create and save our data
-    Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
-    contact.uniqueid = myNum;
-    contact.name = compositeName;
-    contact.initials = abbreviation;
-    contact.owes = 0;
+    __block bool addSuccessful = NO;
+    __block NSIndexPath *path;
+    [self.managedObjectContext performBlockAndWait:^{
+        // Now create and save our data
+        Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
+        contact.uniqueid = myNum;
+        contact.name = compositeName;
+        contact.initials = abbreviation;
+        contact.owes = 0;
+        
+        //create a placeholder for our contact information
+        ContactContactInfo *cinfo = [NSEntityDescription
+                                     insertNewObjectForEntityForName:@"ContactContactInfo"
+                                     inManagedObjectContext:self.managedObjectContext];
+        
+        cinfo.email = email;
+        cinfo.phone = phone;
+        contact.contactinfo = cinfo;
+        
+        addSuccessful = [self.managedObjectContext save:nil];
+        
+        path = [self.contactListController indexPathForObject:contact];
+        path = [NSIndexPath indexPathForRow:path.row inSection:SECTION_CONTACTS];
+    }];
     
-    //create a placeholder for our contact information
-    ContactContactInfo *cinfo = [NSEntityDescription
-                                 insertNewObjectForEntityForName:@"ContactContactInfo"
-                                 inManagedObjectContext:self.managedObjectContext];
-    
-    cinfo.email = email;
-    cinfo.phone = phone;
-    contact.contactinfo = cinfo;
-    
-    if(![self.managedObjectContext save:nil]) {
-        // TODO: Handle error
+    if (!addSuccessful) {
+        // TODO: Show message to user
         return;
     }
     
     // Finally, select the contact
-    NSIndexPath *path = [self.contactListController indexPathForObject:contact];
-    path = [NSIndexPath indexPathForRow:path.row inSection:SECTION_CONTACTS];
     [self tableView:self.tableView didSelectRowAtIndexPath:path];
     
     // Disable adding people if at 30
@@ -585,15 +593,19 @@
     if(self.editPath.section != SECTION_CONTACTS) {
         if(SaveChanges) {
             BillUser *user;
-            if(self.editPath.section == SECTION_GENERICS)
+            if (self.editPath.section == SECTION_GENERICS) {
                 user = [self.logic getGenericUser:self.editPath.row];
-            else
+            } else {
                 user = [self.logic getSelf];
+            }
             
-            if(self.editUser.name.length > 0)
+            if (self.editUser.name.length > 0) {
                 user.name = self.editUser.name;
-            if(self.editUser.abbreviation.length > 0)
+            }
+            
+            if (self.editUser.abbreviation.length > 0) {
                 user.abbreviation = self.editUser.abbreviation;
+            }
             
             user.phone = self.editUser.phone;
             user.email = self.editUser.email;
@@ -608,30 +620,22 @@
             [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:self.editPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         }
     } else {
-        if(SaveChanges) {
-            NSError *error;
-            if (![self.managedObjectContext save:&error]) {
-                NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Adding Person" message:@"An error occurred while attempting to save your changes" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
-                [alert show];
-                
-                //leave them where they are
-                return;
+        [self.managedObjectContext performBlockAndWait:^{
+            if(SaveChanges) {
+                NSError *error;
+                if (![self.managedObjectContext save:&error]) {
+                    NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Adding Person" message:@"An error occurred while attempting to save your changes" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
+                        [alert show];
+                    });
+                    
+                    return;
+                }
+            } else {
+                [self.managedObjectContext rollback];
             }
-            
-            /*
-             //update contact if in bill as well
-             Contact *contact = [self.contactListController objectAtIndexPath:[self fecthedObjectIndexPath:self.editPath]];
-             BillUser *temp = [self.dataSource.logic getUserByContact:contact];
-             
-             //force update of properties of user
-             if(temp)
-             temp.contact = contact;
-             */
-            
-        } else {
-            [self.managedObjectContext rollback];
-        }
+        }];
     }
     
     self.editPath = nil;

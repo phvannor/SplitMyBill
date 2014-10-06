@@ -34,11 +34,13 @@
         self.bill.total = [NSNumber numberWithInteger:[[self.billlogic.total decimalNumberByMultiplyingByPowerOf10:2] integerValue]];
         
         // If total is 0 and bill is new, don't save
-        if(self.bill.items.count == 0) {
-            [self.managedObjectContext deleteObject:self.bill];
-        } else {
-            [self.managedObjectContext save:nil];
-        }
+        [self.managedObjectContext performBlockAndWait:^{
+            if(self.bill.items.count == 0) {
+                [self.managedObjectContext deleteObject:self.bill];
+            } else {
+                [self.managedObjectContext save:nil];
+            }
+        }];
     }
     [super viewWillDisappear:animated];
 }
@@ -102,8 +104,9 @@
     //check if self present and user count >X;
     NSInteger max = 0;
     if([self.billlogic getSelf]) max = 1;
-    if((self.billlogic.userCount > max) && ![self.billlogic.total isEqual:[NSDecimalNumber zero]])
+    if((self.billlogic.userCount > max) && ![self.billlogic.total isEqual:[NSDecimalNumber zero]]) {
         [shareOptions addButtonWithTitle:@"Add To Debts"];
+    }
     
     [shareOptions addButtonWithTitle:@"Cancel"];
     [shareOptions setCancelButtonIndex:(shareOptions.numberOfButtons - 1)];
@@ -257,13 +260,21 @@
             user.contact.owes = [NSNumber numberWithInteger:([user.contact.owes integerValue] + [amount integerValue])];
         }
         
-        NSError *error;
-        if(![self.managedObjectContext save:&error]) {
+        __block NSError *error;
+        __block BOOL saveSuccess = NO;
+        [self.managedObjectContext performBlockAndWait:^{
+            saveSuccess = [self.managedObjectContext save:&error];
+            
+            if (!saveSuccess) {
+                // Revert changes
+                [self.managedObjectContext rollback];
+            }
+        }];
+        
+        if (!saveSuccess) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Debt Creation Error" message:@"An error occured while attempting to create debts from this bill" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [alert show];
             
-            //revert changes
-            [self.managedObjectContext rollback];
             return;
         }
         
@@ -275,14 +286,21 @@
 
 - (IBAction)deleteBill:(id)sender {
     //delete a bill
-    [self.managedObjectContext deleteObject:self.bill];
+    __block NSError *error;
+    __block BOOL saveSuccess = NO;
     
-    NSError *error;
-    if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Error - bill deletion %@", [error localizedDescription]);
+    [self.managedObjectContext performBlockAndWait:^{
+        [self.managedObjectContext deleteObject:self.bill];
+        saveSuccess = [self.managedObjectContext save:&error];
+    }];
+    
+    if (!saveSuccess) {
+        NSLog(@"Error - bill deletion %@", error.localizedDescription);
+        
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Deleting Bill" message:@"An error occurred while attempting to delete the bill" delegate:nil cancelButtonTitle:NULL otherButtonTitles:@"OK", nil];
         [alert show];
     }
+    
     self.bill = nil;
 }
 

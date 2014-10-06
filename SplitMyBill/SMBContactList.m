@@ -7,7 +7,7 @@
 // Displays a list of each contact and the total they owe/are owed
 //
 
-#import "SplitMyBillContactList.h"
+#import "SMBContactList.h"
 #import "Contact.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import "ContactContactInfo.h"
@@ -16,7 +16,7 @@
 #import "BillLogic.h"
 #import <QuartzCore/QuartzCore.h>
 
-@interface SplitMyBillContactList () <ABPeoplePickerNavigationControllerDelegate, ContactEditorDelegate, NSFetchedResultsControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+@interface SMBContactList () <ABPeoplePickerNavigationControllerDelegate, ContactEditorDelegate, NSFetchedResultsControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 
 @property (nonatomic) bool CanAccessContacts;
 @property (nonatomic, strong) NSFetchedResultsController *contactList;
@@ -25,19 +25,21 @@
 @end
 
 
-@implementation SplitMyBillContactList
+@implementation SMBContactList
 
 - (NSFetchedResultsController *)fetchedResultsController {
     if (_contactList != nil) {
         return _contactList;
     }
     
+    // Load contacts, sorted by name...
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Contact"];
-    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
     fetchRequest.sortDescriptors = @[sort];
     fetchRequest.fetchBatchSize = 20;
     
     [NSFetchedResultsController deleteCacheWithName:@"AllContacts"];
+    
     NSFetchedResultsController *fetchedResultsController =
     [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                         managedObjectContext:self.managedObjectContext
@@ -101,12 +103,8 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+    
     self.tableView = nil;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 - (IBAction)addContact:(id)sender {
@@ -185,8 +183,8 @@
     static NSString *CellIdentifier = @"contact";
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-
     [self configureCell:cell atIndexPath:indexPath];
+    
     return cell;
 }
 
@@ -215,21 +213,23 @@
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 1) {
-        // Fall back to a manual contact
-        // Create a person and contact info object and send them to the editor
-        NSNumber *customUserId = [NSNumber numberWithInt:kABRecordInvalidID];
-        
-        Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact"
-                                                         inManagedObjectContext:self.managedObjectContext];
-        contact.uniqueid = customUserId;
-        
-        // Blank name and initials
-        ContactContactInfo *cinfo = [NSEntityDescription insertNewObjectForEntityForName:@"ContactContactInfo"
-                                                                  inManagedObjectContext:self.managedObjectContext];
-        contact.contactinfo = cinfo;
-        
-        // Now go to the editor view
-        self.editContact = contact;
+        [self.managedObjectContext performBlockAndWait:^{
+            // Fall back to a manual contact
+            // Create a person and contact info object and send them to the editor
+            NSNumber *customUserId = [NSNumber numberWithInt:kABRecordInvalidID];
+            
+            Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact"
+                                                             inManagedObjectContext:self.managedObjectContext];
+            contact.uniqueid = customUserId;
+            
+            // Blank name and initials
+            ContactContactInfo *cinfo = [NSEntityDescription insertNewObjectForEntityForName:@"ContactContactInfo"
+                                                                      inManagedObjectContext:self.managedObjectContext];
+            contact.contactinfo = cinfo;
+            
+            // Now go to the editor view
+            self.editContact = contact;
+        }];
         
         [self performSegueWithIdentifier:@"edit contact" sender:self];
     }
@@ -260,20 +260,24 @@
     // If we have access to the actual contact list, check to see if the selected contact is already
     // present in our contact list
     if (self.CanAccessContacts) {
-        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Contact"];
-        fetchRequest.fetchLimit = 1;
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"uniqueid == %@", myNum];
+        __block BOOL contactFound = NO;
+        [self.managedObjectContext performBlockAndWait:^{
+            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Contact"];
+            fetchRequest.fetchLimit = 1;
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"uniqueid == %@", myNum];
+            
+            NSError *error;
+            NSArray *contacts = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+            contactFound = contacts.count > 0;
+        }];
         
-        NSError *error;
-        NSArray *contacts = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-        if(contacts.count == 1) {
+        if(contactFound) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Contact Already Added"
                                                             message:@"The selected contact was added previously."
                                                            delegate:nil
                                                   cancelButtonTitle:@"Cancel"
                                                   otherButtonTitles: nil];
             [alert show];
-            
             return;
         }
     }
@@ -285,12 +289,12 @@
     NSString *compositeName = @"";
     NSString *abbreviation = @"";
     
-    if(firstName.length > 1) {
+    if (firstName.length > 1) {
         abbreviation = [firstName substringToIndex:1];
         compositeName = firstName;
     }
     
-    if(lastName.length > 1) {
+    if (lastName.length > 1) {
         abbreviation = [abbreviation stringByAppendingString:[lastName substringToIndex:1]];
         if (compositeName) {
             compositeName = [compositeName stringByAppendingFormat:@" %@", lastName];
@@ -299,7 +303,7 @@
         }
     }
         
-    if(abbreviation.length == 0) {
+    if (abbreviation.length == 0) {
         abbreviation = @"??";
         compositeName = @"Unknown";
     }
@@ -330,90 +334,96 @@
     
     // Now create and save our data
     
-    Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact"  inManagedObjectContext:self.managedObjectContext];
-    contact.uniqueid = myNum;
-    contact.name = compositeName;
-    contact.initials = abbreviation;
-    contact.owes = 0;
+    [self.managedObjectContext performBlockAndWait:^{
+        Contact *contact = [NSEntityDescription insertNewObjectForEntityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
+        contact.uniqueid = myNum;
+        contact.name = compositeName;
+        contact.initials = abbreviation;
+        contact.owes = 0;
+        
+        // The create a placeholder for our contact information
+        
+        ContactContactInfo *cinfo = [NSEntityDescription insertNewObjectForEntityForName:@"ContactContactInfo"
+                                                                  inManagedObjectContext:self.managedObjectContext];
+        
+        cinfo.email = email;
+        cinfo.phone = phone;
+        contact.contactinfo = cinfo;
+        
+        self.editContact = contact;
+    }];
     
-    // The create a placeholder for our contact information
-    
-    ContactContactInfo *cinfo = [NSEntityDescription insertNewObjectForEntityForName:@"ContactContactInfo"
-                                                              inManagedObjectContext:self.managedObjectContext];
-    
-    cinfo.email = email;
-    cinfo.phone = phone;
-    contact.contactinfo = cinfo;
-    
-    self.editContact = contact;
-
-    // Now let the user pick any additional details
     [self performSegueWithIdentifier:@"edit contact" sender:self];
 }
 
-- (BOOL)peoplePickerNavigationController:
-(ABPeoplePickerNavigationController *)peoplePicker
-      shouldContinueAfterSelectingPerson:(ABRecordRef)person
-                                property:(ABPropertyID)property
-                              identifier:(ABMultiValueIdentifier)identifier
-{
-    return NO;
-}
 
 # pragma mark - ContactEditorDelegate
 
+
 - (void) ContactEditor:(id)Editor Close:(bool)SaveChanges
 {
-    if (!SaveChanges || self.editContact.name.length == 0) {
-        [self.managedObjectContext rollback];
-    } else {
-    
-        // If no initials grab four characters of the name
-        if (self.editContact.initials.length == 0) {
-            NSUInteger length = self.editContact.name.length;
-            length = length > 4 ? 4 : length;
+    __block bool saveSuccess = NO;
+    __block NSError *error;
+
+    [self.managedObjectContext performBlockAndWait:^{
+        if (!SaveChanges || self.editContact.name.length == 0) {
+            [self.managedObjectContext rollback];
+            saveSuccess = YES;
+        } else {
+            // If no initials grab four characters of the name
+            if (self.editContact.initials.length == 0) {
+                NSUInteger length = self.editContact.name.length;
+                length = length > 4 ? 4 : length;
+                
+                self.editContact.initials = [self.editContact.name substringToIndex:length];
+            }
             
-            self.editContact.initials = [self.editContact.name substringToIndex:length];
+            saveSuccess = [self.managedObjectContext save:&error];
         }
-        
-        NSError *error;
-        if (![self.managedObjectContext save:&error]) {
-            NSLog(@"Couldn't save: %@", [error localizedDescription]);
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Save Error"
-                                                            message:@"An error occurred while attempting to save your changes"
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"Cancel"
-                                                  otherButtonTitles:nil];
-            [alert show];
-            return;
-        }
+    }];
+    
+    if (!saveSuccess) {
+        NSLog(@"Couldn't save: %@", error.localizedDescription);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Save Error"
+                                                        message:@"An error occurred while attempting to save your changes"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"Cancel"
+                                              otherButtonTitles:nil];
+        [alert show];
+        return;
     }
     
     self.editContact = nil;
 }
 
 - (void) ContactEditorDelete:(id)Editor {
-    if (!self.editContact.objectID.isTemporaryID) {
-        // Delete our object
-        [self.managedObjectContext deleteObject:self.editContact.contactinfo];
-        [self.managedObjectContext deleteObject:self.editContact];
-        
-        NSError *error;
-        if (![self.managedObjectContext save:&error]) {
-            NSLog(@"Couldn't save: %@", error.localizedDescription);
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Adding Contact"
-                                                            message:@"An error occurred while attempting to create a new contact"
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"Cancel"
-                                                  otherButtonTitles:nil];
-            [alert show];
-        }
+    __block BOOL saveSuccess = NO;
+    __block NSError *error;
     
-    } else {
-        // We just created it, so delete the inserted object by rollingback
-        [self.managedObjectContext rollback];
-    }
+    [self.managedObjectContext performBlockAndWait:^{
+        if (!self.editContact.objectID.isTemporaryID) {
+            // Delete our object
+            [self.managedObjectContext deleteObject:self.editContact.contactinfo];
+            [self.managedObjectContext deleteObject:self.editContact];
+            
+            saveSuccess = [self.managedObjectContext save:nil];
+        } else {
+            // We just created it, so delete the inserted object by rollingback
+            [self.managedObjectContext rollback];
+            saveSuccess = YES;
+        }
+    }];
 
+    if (!saveSuccess) {
+        NSLog(@"Couldn't save: %@", error.localizedDescription);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Adding Contact"
+                                                        message:@"An error occurred while saving your changes to the contact"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"Cancel"
+                                              otherButtonTitles:nil];
+        [alert show];
+    }
+    
     self.editContact = nil;
     [self.navigationController popViewControllerAnimated:YES];
 }

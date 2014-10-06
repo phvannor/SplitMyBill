@@ -38,7 +38,7 @@
 		A31E07A316D19FF700632D8C /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = A31E07A116D19FF700632D8C /* menu.png */; };
 		A31E07A416D19FF700632D8C /* menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A31E07A216D19FF700632D8C /* menu@2x.png */; };
 		A31E07AA16D1A5DD00632D8C /* SplitMyBillPartySelection.m in Sources */ = {isa = PBXBuildFile; fileRef = A31E07A916D1A5DD00632D8C /* SplitMyBillPartySelection.m */; };
-		A32402E0160A60EF0075797B /* SplitMyBillContactList.m in Sources */ = {isa = PBXBuildFile; fileRef = A32402DF160A60EF0075797B /* SplitMyBillContactList.m */; };
+		A32402E0160A60EF0075797B /* SMBContactList.m in Sources */ = {isa = PBXBuildFile; fileRef = A32402DF160A60EF0075797B /* SMBContactList.m */; };
 		A32402E4160A625B0075797B /* SplitMyBill.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A32402E2160A625B0075797B /* SplitMyBill.xcdatamodeld */; };
 		A32402E6160A63FE0075797B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A32402E5160A63FE0075797B /* CoreData.framework */; };
 		A32402EF160A7D9C0075797B /* SMBMainScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A32402EE160A7D9C0075797B /* SMBMainScreenViewController.m */; };
@@ -144,8 +144,8 @@
 		A31E07A216D19FF700632D8C /* menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu@2x.png"; sourceTree = "<group>"; };
 		A31E07A816D1A5DD00632D8C /* SplitMyBillPartySelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitMyBillPartySelection.h; sourceTree = "<group>"; };
 		A31E07A916D1A5DD00632D8C /* SplitMyBillPartySelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitMyBillPartySelection.m; sourceTree = "<group>"; };
-		A32402DE160A60EF0075797B /* SplitMyBillContactList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitMyBillContactList.h; sourceTree = "<group>"; };
-		A32402DF160A60EF0075797B /* SplitMyBillContactList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitMyBillContactList.m; sourceTree = "<group>"; };
+		A32402DE160A60EF0075797B /* SMBContactList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMBContactList.h; sourceTree = "<group>"; };
+		A32402DF160A60EF0075797B /* SMBContactList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBContactList.m; sourceTree = "<group>"; };
 		A32402E3160A625B0075797B /* SplitMyBill.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SplitMyBill.xcdatamodel; sourceTree = "<group>"; };
 		A32402E5160A63FE0075797B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		A32402ED160A7D9C0075797B /* SMBMainScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMBMainScreenViewController.h; sourceTree = "<group>"; };
@@ -372,8 +372,8 @@
 			children = (
 				A3CF31A2160AD95F00CC80E1 /* SplitMyBillContactEditorViewController.h */,
 				A3CF31A3160AD96000CC80E1 /* SplitMyBillContactEditorViewController.m */,
-				A32402DE160A60EF0075797B /* SplitMyBillContactList.h */,
-				A32402DF160A60EF0075797B /* SplitMyBillContactList.m */,
+				A32402DE160A60EF0075797B /* SMBContactList.h */,
+				A32402DF160A60EF0075797B /* SMBContactList.m */,
 				A3ECA61B160D058B00D884FF /* SplitMyBillContactDebtViewController.h */,
 				A3ECA61C160D058B00D884FF /* SplitMyBillContactDebtViewController.m */,
 			);
@@ -596,7 +596,7 @@
 				A388D1F7155C10ED00A964AB /* SplitMyBillUserOwesTableCellCell.m in Sources */,
 				A307C4BE15893A120068819D /* SplitMyBillRoundingSettingsViewController.m in Sources */,
 				A307C4C21589400F0068819D /* SplitMyBillGrandTotalEditViewController.m in Sources */,
-				A32402E0160A60EF0075797B /* SplitMyBillContactList.m in Sources */,
+				A32402E0160A60EF0075797B /* SMBContactList.m in Sources */,
 				A32402E4160A625B0075797B /* SplitMyBill.xcdatamodeld in Sources */,
 				A32402EF160A7D9C0075797B /* SMBMainScreenViewController.m in Sources */,
 				A32C5346160AA29600BF547D /* ContactContactInfo.m in Sources */,

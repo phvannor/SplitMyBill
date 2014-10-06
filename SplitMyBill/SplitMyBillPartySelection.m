@@ -71,7 +71,7 @@
 }
 
 @synthesize contactListController = _contactListController;
-- (NSFetchedResultsController *)contactListController {
+- (NSFetchedResultsController *) contactListController {
     if (_contactListController != nil) {
         return _contactListController;
     }

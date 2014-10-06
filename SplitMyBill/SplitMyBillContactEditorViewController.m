@@ -17,6 +17,9 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 - (IBAction)buttonDelete:(id)sender;
 
+@property (nonatomic, strong) NSArray *phoneNumbers;
+@property (nonatomic, strong) NSArray *emailAddresses;
+
 @end
 
 @implementation SplitMyBillContactEditorViewController
@@ -48,17 +51,63 @@
     self.navigationController.toolbarHidden = YES;
     
     // check if the contactID is valid and still exists
-    if (self.contact) {
-        NSNumber *myNum = self.contact.uniqueid;
-        ABRecordID myID = (ABRecordID)[myNum integerValue];
-        if (myID != kABRecordInvalidID) {
-            ABAddressBookRef abook = ABAddressBookCreateWithOptions(NULL, nil);
-            if (abook) {
-                self.abContact = ABAddressBookGetPersonWithRecordID(abook, myID);
-                CFRelease(abook);
-            }
-        }
+    if (!self.contact) {
+        return;
     }
+    
+    NSNumber *myNum = self.contact.uniqueid;
+    ABRecordID myID = (ABRecordID)[myNum integerValue];
+    if (myID == kABRecordInvalidID) {
+        return;
+    }
+    
+    ABAddressBookRef abook = ABAddressBookCreateWithOptions(NULL, nil);
+    if (!abook) {
+        return;
+    }
+    
+    self.abContact = ABAddressBookGetPersonWithRecordID(abook, myID);
+
+    NSMutableArray *phoneNumbers = [NSMutableArray new];
+    ABMultiValueRef abPhoneNumbers = ABRecordCopyValue(self.abContact, kABPersonPhoneProperty);
+    
+    CFStringRef rawLabel = nil;
+    for(NSInteger i = 0; i < ABMultiValueGetCount(abPhoneNumbers); i++) {
+        NSString *label = @"";
+        NSString *number = (__bridge_transfer NSString*) ABMultiValueCopyValueAtIndex(abPhoneNumbers, i);
+        
+        rawLabel = ABMultiValueCopyLabelAtIndex(abPhoneNumbers, i);
+        if (rawLabel) {
+            label = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(rawLabel));
+            CFRelease(rawLabel);
+        }
+        
+        [phoneNumbers addObject:@{@"number": number, @"label": label}];
+    }
+    
+    CFRelease(abPhoneNumbers);
+    self.phoneNumbers = phoneNumbers;
+    
+    
+    NSMutableArray *emailAddresses = [NSMutableArray new];
+    ABMultiValueRef abEmailAddresses = ABRecordCopyValue(self.abContact, kABPersonEmailProperty);
+    for(NSInteger i = 0; i < ABMultiValueGetCount(abEmailAddresses); i++) {
+        NSString *label = @"";
+        NSString *email = (__bridge_transfer NSString*) ABMultiValueCopyValueAtIndex(abEmailAddresses, i);
+        
+        rawLabel = ABMultiValueCopyLabelAtIndex(abEmailAddresses, i);
+        if (rawLabel) {
+            label = (__bridge_transfer NSString *)(ABAddressBookCopyLocalizedLabel(rawLabel));
+            CFRelease(rawLabel);
+        }
+        
+        [emailAddresses addObject:@{@"email": email, @"label": label}];
+    }
+    
+    CFRelease(abEmailAddresses);
+    self.emailAddresses = emailAddresses;
+    
+    CFRelease(abook);
 }
 
 - (void)didReceiveMemoryWarning
@@ -94,7 +143,7 @@
 {
     if (section == 0) { // user
         return 2;
-    } else if (section == 2) { // delete
+    } else if (section == 3) { // delete
         return 1;
     }
 
@@ -104,13 +153,9 @@
 
     NSInteger count = 0;
     if (section == 1) {
-        ABMultiValueRef phoneNumbers = ABRecordCopyValue(self.abContact, kABPersonPhoneProperty);
-        count = ABMultiValueGetCount(phoneNumbers);
-        CFRelease(phoneNumbers);
+        return self.phoneNumbers.count;
     } else if (section == 2) {
-        ABMultiValueRef emails = ABRecordCopyValue(self.abContact, kABPersonEmailProperty);
-        count = ABMultiValueGetCount(emails);
-        CFRelease(emails);
+        return self.emailAddresses.count;
     }
     
     return count;
@@ -128,23 +173,26 @@
         comparisonValue = self.contact.contactinfo.email;
     }
     
-    ABMultiValueRef values;
+    NSArray *values;
+    NSString *key;
+    
     if(usePhone) {
-        values = ABRecordCopyValue(self.abContact, kABPersonPhoneProperty);
+        values = self.phoneNumbers;
+        key = @"phone";
     } else {
-        values = ABRecordCopyValue(self.abContact, kABPersonEmailProperty);
+        values = self.emailAddresses;
+        key = @"email";
     }
     
     bool found = NO;
-    for(NSInteger i = 0; i < ABMultiValueGetCount(values); i++) {
-        NSString *temp = (__bridge_transfer NSString*) ABMultiValueCopyValueAtIndex(values, i);
+    for(NSInteger i = 0; i < values.count; i++) {
+        NSDictionary *properties = values[i];
         
-        if([temp isEqualToString:comparisonValue]){
+        if([properties[key] isEqualToString:comparisonValue]){
             found = YES;
             break;
         }
     }
-    CFRelease(values);
     
     return found;
 }
@@ -153,13 +201,9 @@
                    getCellType:(NSInteger)type
              forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSInteger count = 0;
     NSString *details;
     NSString *label;
-    CFStringRef rawLabel = nil;
     NSString *comparisonValue;
-
-    ABMultiValueRef values;
     
     if (self.contact.contactinfo) {
         if(type == 0) {
@@ -170,36 +214,26 @@
     }
     
     if (self.abContact != NULL) {
-        if(type == 0) {
-            values = ABRecordCopyValue(self.abContact,                                                         kABPersonPhoneProperty);
+        if (type == 0) {
+            NSDictionary *properties = self.phoneNumbers[indexPath.row];
+            details = properties[@"number"];
+            label = properties[@"label"];
         } else {
-            values = ABRecordCopyValue(self.abContact,                                                         kABPersonEmailProperty);
+            NSDictionary *properties = self.emailAddresses[indexPath.row];
+            details = properties[@"email"];
+            label = properties[@"label"];
         }
         
-        count = ABMultiValueGetCount(values);
-        if (count != indexPath.row) {
-            details = (__bridge_transfer NSString*) ABMultiValueCopyValueAtIndex(values, indexPath.row);
-            rawLabel = ABMultiValueCopyLabelAtIndex(values, indexPath.row);
-            CFRelease(values);
-            
-            if(rawLabel) {
-                label = (__bridge_transfer NSString*) ABAddressBookCopyLocalizedLabel(rawLabel);
-                CFRelease(rawLabel);
-            } else {
-                label = @"";
-            }
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"display cell"];
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            cell.textLabel.text = label;
-            cell.detailTextLabel.text = details;
-            
-            if([comparisonValue isEqualToString:details]) {
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            }
-            
-            return cell;
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"display cell"];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.textLabel.text = label;
+        cell.detailTextLabel.text = details;
+        
+        if([comparisonValue isEqualToString:details]) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
-        CFRelease(values);
+        
+        return cell;
     }
     
     //either no other numbers or we are the last row
